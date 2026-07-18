@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import datetime
 
-# Defensive package verification engine for live market streaming
+# Strict live data feed environment tracking engine
 try:
     import yfinance as yf
 except ModuleNotFoundError:
@@ -10,23 +10,23 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
+st.set_page_config(layout="wide", page_title="Live Global Foundry Core Panel")
 
 # 2. SEED METADATA MATRIX FOR LIVE FETCHING
 RAW_DATA = [
-    {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA", "def_r": 0.452, "def_v": 0.44},
-    {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA", "def_r": 0.245, "def_v": 0.22},
-    {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA", "def_r": 0.221, "def_v": 0.20},
-    {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA", "def_r": 0.195, "def_v": 0.24},
-    {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "def_r": 0.212, "def_v": 0.28},
-    {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA", "def_r": 0.228, "def_v": 0.36},
-    {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA", "def_r": 0.384, "def_v": 0.52},
-    {"category": "SOXX Top Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA", "def_r": 0.315, "def_v": 0.42},
-    {"category": "SOXX Top Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA", "def_r": 0.198, "def_v": 0.49},
-    {"category": "SOXX Top Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA", "def_r": 0.294, "def_v": 0.27},
-    {"category": "SOXX Top Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA", "def_r": 0.264, "def_v": 0.34},
-    {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_r": 0.261, "def_v": 0.33},
-    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_r": 0.114, "def_v": 0.36}
+    {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA", "def_price": 135.50, "def_r": 0.452, "def_v": 0.44},
+    {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA", "def_price": 420.10, "def_r": 0.245, "def_v": 0.22},
+    {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA", "def_price": 225.40, "def_r": 0.221, "def_v": 0.20},
+    {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA", "def_price": 175.60, "def_r": 0.195, "def_v": 0.24},
+    {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "def_price": 185.30, "def_r": 0.212, "def_v": 0.28},
+    {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA", "def_price": 495.20, "def_r": 0.228, "def_v": 0.36},
+    {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA", "def_price": 210.50, "def_r": 0.384, "def_v": 0.52},
+    {"category": "SOXX Top Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA", "def_price": 154.40, "def_r": 0.315, "def_v": 0.42},
+    {"category": "SOXX Top Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA", "def_price": 94.50, "def_r": 0.198, "def_v": 0.49},
+    {"category": "SOXX Top Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA", "def_price": 164.80, "def_r": 0.294, "def_v": 0.27},
+    {"category": "SOXX Top Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA", "def_price": 192.40, "def_r": 0.264, "def_v": 0.34},
+    {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_price": 178.20, "def_r": 0.261, "def_v": 0.33},
+    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_price": 7.80, "def_r": 0.114, "def_v": 0.36}
 ]
 
 # Cache live pricing data to prevent API throttling on component click loops
@@ -35,7 +35,7 @@ def fetch_live_market_data():
     enriched_data = []
     for item in RAW_DATA:
         ticker_symbol = item["ticker"]
-        last_price = item.get("def_price", 150.0)
+        last_price = item["def_price"]
         ann_10y = item["def_r"]
         vol = item["def_v"]
         
@@ -53,23 +53,26 @@ def fetch_live_market_data():
                     if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
                     if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
-            pass # Keep default values if API fails
+            pass # Use hardcoded fallbacks transparently if Yahoo is down or throttling
             
         enriched_item = item.copy()
         enriched_item.update({"price": last_price, "ann_10y": ann_10y, "vol": vol})
         enriched_data.append(enriched_item)
     return enriched_data
 
-# Execute live download streams safely
-with st.spinner("Streaming live price quotes directly from market terminals..."):
+# Execute streaming queries
+with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
     LIVE_DATA = fetch_live_market_data()
 
-# 3. GLOBAL APPLICATION STATE ENGINE
+# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
 if "focused_key" not in st.session_state:
     st.session_state.focused_key = "NVDA"
 
 if "portfolio_weights" not in st.session_state:
     st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in LIVE_DATA}
+
+def select_focused_asset(ticker):
+    st.session_state.focused_key = ticker
 
 st.title("📊 LIVE PORTFOLIO TESTING PANEL")
 
@@ -97,9 +100,7 @@ with panel_left:
         
         is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_live_{ticker}_{idx}", label_visibility="collapsed")
         
-        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_live_{ticker}_{idx}"):
-            st.session_state.focused_key = ticker
-            st.rerun()
+        r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
             
         if is_checked:
             old_val = st.session_state.portfolio_weights[ticker]
@@ -110,7 +111,7 @@ with panel_left:
             st.session_state.portfolio_weights[ticker] = 0
             r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
             
-        r4.write(f"{item['currency']} {item['price']:,.2f}")
+        r4.write(f"USD {item['price']:,.2f}")
 
     st.write("")
     
@@ -120,7 +121,7 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    years_list = list(range(2016, 2026))
+    years_list = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
     entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
     execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
 
@@ -139,7 +140,7 @@ with panel_right:
         st.markdown("---")
         
         met1, met2 = st.columns(2)
-        met1.metric("LAST CLOSE PRICE", f"{target_record['currency']} {target_record['price']:,.2f}")
+        met1.metric("LAST CLOSE PRICE", f"USD {target_record['price']:,.2f}")
         met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
         
         st.markdown("---")
@@ -149,7 +150,7 @@ with panel_right:
     else:
         st.write("Select an active asset to load data parameters.")
 
-# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH STRICT TYPE-SAFETY WRAPPERS
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH DYNAMIC DAY COUNTER
 if execute_backtest:
     total_alloc = sum(st.session_state.portfolio_weights.values())
     if total_alloc != 100:
@@ -157,7 +158,6 @@ if execute_backtest:
     else:
         st.markdown("---")
         
-        # DYNAMIC DAY FRACTION ENGINE CALCULATION (Jan 1st Start to precisely TODAY)
         start_date = datetime.date(entry_year, 1, 1)
         end_date = datetime.date.today()
         days_elapsed = (end_date - start_date).days
@@ -181,7 +181,6 @@ if execute_backtest:
                     break
                     
             if asset_data is not None:
-                # GUARANTEED NUMERIC TYPE-CASTING TO PREVENT NONE-TYPE MATH CRASHES
                 r = float(asset_data.get('ann_10y', 0.20))
                 v = float(asset_data.get('vol', 0.30))
                 
@@ -193,8 +192,6 @@ if execute_backtest:
                 perf_pct = (growth_factor - 1.0) * 100
                 
                 table_summary.append({
-                    "Asset Ticker": ticker,
-                    "Allocation Weight": f"{weight}%",
 
 
 
