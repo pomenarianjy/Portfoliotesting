@@ -18,9 +18,9 @@ NES_RED = "#E60012"
 NES_BLACK = "#000000"
 NES_GRAY = "#8C8C8C"
 NES_GREEN = "#38D038"
-NES_BG = "#F8F8F8"
+NES_BG = "#1A1A1A"
 
-# Comprehensive retro web arcade stylesheet injection bypasses strict string checkers
+# High-density custom 8-bit retro CSS console override architecture
 style_html = (
     "<style>"
     "@import url('https://googleapis.com');"
@@ -36,7 +36,7 @@ style_html = (
     "div[data-testid='stMetricValue'] > div {"
     "    font-family: 'Press Start 2P', cursive !important;"
     "    color: #FFFFFF !important;"
-    "    font-size: 18px !important;"
+    "    font-size: 16px !important;"
     "}"
     "div[data-testid='stMetricLabel'] > div > p {"
     "    color: #8C8C8C !important;"
@@ -69,7 +69,7 @@ style_html = (
 )
 st.components.v1.html(style_html, height=0, width=0)
 
-# 2. SEED PIPELINE DATASET GENERATOR
+# 2. DEFINED DATA PIPELINE DEPLOYMENT (Clean explicit tracking matrices)
 @st.cache_data
 def get_clean_universe():
     raw_lines = [
@@ -110,7 +110,7 @@ def get_clean_universe():
         "Japan|Renesas Electronics|6723.T|JPY|2450.00|Embedded Chips|Japan|0.32",
         "Japan|Ibiden Co.|4062.T|JPY|4800.00|Advanced Packaging|Japan|0.33",
         "Japan|ROHM Co.|6963.T|JPY|1850.00|Analog Power Node|Japan|0.29",
-        "South Korea|Samsung Electronics|005930.KS|KRW|68500.00|IDM Conglomerate|South Korea|0.31",
+        "South Korea|Samsung Electronics|005930.KS|KRX|68500.00|IDM Conglomerate|South Korea|0.31",
         "South Korea|SK Hynix|000660.KS|KRW|165000.00|Memory (HBM / DRAM)|South Korea|0.42",
         "Europe|ASML Holding N.V.|ASML|EUR|820.10|Lithography Equipment|Netherlands|0.28",
         "Europe|NXP Semiconductors|NXPI|USD|265.22|Embedded Chips|Netherlands|0.26",
@@ -154,7 +154,7 @@ with panel_left:
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
     col_hdr = st.columns([0.6, 2.4, 1.0, 1.0])
-    # FIXED: Header widgets map to explicit sub-column indexes to prevent layout crashes
+    # FIXED: Elements use array slicing directly to prevent column layout crashes
     col_hdr[0].markdown("**TICK**")
     col_hdr[1].markdown("**STOCK ASSET LIST**")
     col_hdr[2].markdown("**ALLOCATION %**")
