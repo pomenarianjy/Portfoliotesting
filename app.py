@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL TECHNOLOGY ASSETS EMBEDDED INTEGRALLY)
+# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL Technology ASSETS EMBEDDED INTEGRALLY)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -106,8 +106,10 @@ with st.spinner("Streaming live price quotes directly from global tech terminals
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
 if "df_portfolio" not in st.session_state:
     base_df = pd.DataFrame(LIVE_DATA)
-    base_df.insert(0, "SELECT", False)
-    base_df["ALLOCATION %"] = 0
+    if "SELECT" not in base_df.columns:
+        base_df.insert(0, "SELECT", False)
+    if "ALLOCATION %" not in base_df.columns:
+        base_df["ALLOCATION %"] = 0
     st.session_state.df_portfolio = base_df
 
 st.title("📊 JASMINE'S LIVE PORTFOLIO PANEL")
@@ -116,11 +118,9 @@ st.subheader("📂 Global Asset Ledger Matrix")
 categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
 selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
 
-# FIXED: Strict indentation layout parses dataframe views correctly
 if selected_cat == "All":
     filtered_view = st.session_state.df_portfolio
 else:
     filtered_view = st.session_state.df_portfolio[st.session_state.df_portfolio["category"] == selected_cat]
 
 col_btn1, col_btn2 = st.columns(2)
-
