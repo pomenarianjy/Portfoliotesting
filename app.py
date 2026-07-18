@@ -11,7 +11,7 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
+st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
 # 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
 TICKERS_LIST = [
