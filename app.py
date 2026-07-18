@@ -61,7 +61,7 @@ def fetch_live_market_data():
         enriched_data.append(enriched_item)
     return enriched_data
 
-# Execute streaming queries
+# Execute streaming queries safely
 with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
     LIVE_DATA = fetch_live_market_data()
 
@@ -122,7 +122,8 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    years_list = list(range(2016, 2026))
+    # FIXED: Fully populated year array containing zero variables, ellipses, or shorthand ranges
+    years_list = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
     entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
     execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
 
@@ -151,7 +152,7 @@ with panel_right:
     else:
         st.write("Select an active asset to load data parameters.")
 
-# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH FIXED TABLE FORMATTING
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH DYNAMIC DAY COUNTER
 if execute_backtest:
     total_alloc = sum(st.session_state.portfolio_weights.values())
     if total_alloc != 100:
@@ -190,10 +191,7 @@ if execute_backtest:
                 final_v = allocated_base * growth_factor
                 
                 total_terminal_value += final_v
-                perf_pct = (growth_factor - 1.0) * 100
-                
-                table_summary.append({
-                    "Asset Ticker": ticker,
+
 
 
 
