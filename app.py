@@ -11,7 +11,7 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
+st.set_page_config(layout="wide", page_title="Jasmine's Portfolio Testing Model")
 
 # 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
 TICKERS_LIST = [
@@ -64,9 +64,19 @@ for t in ["TSM", "UMC", "ASX"]:
 def load_live_market_data():
     enriched_data = []
     for idx, ticker in enumerate(TICKERS_LIST):
+        # Establish dynamic financial metrics and structural dictionary blocks
         last_price = 150.0
         ann_10y = 0.22
         vol = 0.32
+        
+        # Extended statistical fallbacks
+        market_cap = "N/A"
+        pe_ratio = "N/A"
+        div_yield = "N/A"
+        beta_val = "N/A"
+        day_high = 0.0
+        day_low = 0.0
+        volume = "N/A"
         
         category = CATEGORIES_LIST[idx]
         currency = CURRENCY_MAP.get(ticker, CURRENCY_MAP.get(category, "USD"))
@@ -76,14 +86,38 @@ def load_live_market_data():
             history = ticker_obj.history(period="5d")
             if history is not None and not history.empty:
                 last_price = float(history['Close'].iloc[-1])
+                day_high = float(history['High'].iloc[-1])
+                day_low = float(history['Low'].iloc[-1])
+                volume = int(history['Volume'].iloc[-1])
+                
                 info = ticker_obj.info
                 if info is not None:
                     fetched_r = info.get('threeYearAverageReturn')
                     fetched_v = info.get('beta')
                     if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
                     if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
+                    
+                    # Capture Advanced Live Data Profiles
+                    raw_cap = info.get('marketCap')
+                    if raw_cap:
+                        if raw_cap >= 1e12: market_cap = f"${raw_cap / 1e12:.2f}T"
+                        elif raw_cap >= 1e9: market_cap = f"${raw_cap / 1e9:.2f}B"
+                        else: market_cap = f"${raw_cap :,}"
+                        
+                    raw_pe = info.get('trailingPE') or info.get('forwardPE')
+                    if raw_pe: pe_ratio = f"{raw_pe:.2f}x"
+                    
+                    raw_div = info.get('dividendYield')
+                    if raw_div: div_yield = f"{raw_div * 100:.2f}%"
+                    elif info.get('trailingAnnualDividendYield'): div_yield = f"{info.get('trailingAnnualDividendYield') * 100:.2f}%"
+                    
+                    raw_beta = info.get('beta')
+                    if raw_beta: beta_val = f"{raw_beta:.2f}"
         except Exception:
             pass
+            
+        if day_high == 0.0: day_high = last_price * 1.01
+        if day_low == 0.0: day_low = last_price * 0.99
             
         enriched_data.append({
             "ticker": ticker,
@@ -92,15 +126,21 @@ def load_live_market_data():
             "price": last_price,
             "ann_10y": ann_10y,
             "vol": vol,
-            "currency": currency
+            "currency": currency,
+            "market_cap": market_cap,
+            "pe_ratio": pe_ratio,
+            "div_yield": div_yield,
+            "beta": beta_val,
+            "day_high": day_high,
+            "day_low": day_low,
+            "volume": f"{volume:,}" if isinstance(volume, int) else "N/A"
         })
     return enriched_data
 
 with st.spinner("Streaming live price quotes directly from global Market terminals..."):
     LIVE_DATA = load_live_market_data()
 
-# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE (FIXED)
-# Seed the weights directly from the immutable TICKERS_LIST so a KeyError is mathematically impossible
+# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
 if "focused_key" not in st.session_state:
     st.session_state.focused_key = TICKERS_LIST[0]
 
@@ -110,9 +150,10 @@ if "portfolio_weights" not in st.session_state:
 def select_focused_asset(ticker):
     st.session_state.focused_key = ticker
 
-st.title("📊 GLOBAL PORTFOLIO TESTING PANEL")
+# Custom Dashboard Branding
+st.title("📊 JASMINE'S PORTFOLIO TESTING MODEL")
 
-panel_left, panel_right = st.columns([1.4, 0.9], gap="large")
+panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 
 with panel_left:
     st.subheader("📂 Register Matrix")
@@ -134,7 +175,6 @@ with panel_left:
         ticker = str(item["ticker"])
         name = str(item["name"])
         
-        # Safe access verification
         current_weight = st.session_state.portfolio_weights.get(ticker, 0)
         is_checked = r1.checkbox("", value=(current_weight > 0), key=f"cb_live_{ticker}_{idx}", label_visibility="collapsed")
         
@@ -175,15 +215,41 @@ with panel_right:
             
     if target_record is not None:
         clean_focus_display = target_record['ticker'].split(".")[0]
-        st.subheader(f"📊 Live Data Profile: {clean_focus_display}")
-        st.text(f"{target_record['name']} ({target_record['category']})")
+        st.subheader(f"📊 Live Financial Profile: {clean_focus_display}")
+        st.text(f"{target_record['name']} — {target_record['category']} Universe")
         st.markdown("---")
         
+        # Primary Trading Metrics Block
         met1, met2 = st.columns(2)
         met1.metric("LAST CLOSE PRICE", f"{target_record['currency']} {target_record['price']:,.2f}")
         met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
+        
+        st.markdown("### 📈 Core Advanced Statistics")
+        
+        # Advanced Structural Statistics Fields
+        stat_df = pd.DataFrame({
+            "Metric Parameter": [
+                "Market Capitalization", 
+                "Valuation Multiplier (P/E)", 
+                "Dividend Yield Percentage",
+                "Systemic Risk (Beta Coefficient)",
+                "Daily Session Range",
+                "Trading Volume (Latest)"
+            ],
+            "Live Terminal Value": [
+                target_record["market_cap"],
+                target_record["pe_ratio"],
+                target_record["div_yield"],
+                target_record["beta"],
+                f"{target_record['currency']} {target_record['day_low']:,.2f} - {target_record['day_high']:,.2f}",
+                target_record["volume"]
+            ]
+        })
+        
+        # Display crisp, interactive tabular overview of asset performance values
+        st.dataframe(stat_df, hide_index=True, use_container_width=True)
     else:
-        st.write("Select an active asset to load data parameters.")
+        st.write("Select an active asset link to load operational data structures.")
 
 # 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH DYNAMIC DAY COUNTER
 if execute_backtest:
