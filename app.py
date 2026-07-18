@@ -1,11 +1,10 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
 
 # 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Portfolio Testing Panel")
 
-# 2. COMPLETE AND EXACT HARDCODED 48-STOCK MATRIX WITHOUT STRING PARSING BREAKS
+# 2. RAW FIXED DATASET MATRIX (ALL 48 GLOBAL SEMICONDUCTOR ASSETS)
 RAW_DATA = [
     {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "price": 135.50, "ann_10y": 0.452, "vol": 0.44, "industry": "AI Compute / GPUs", "geo": "USA"},
     {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "price": 420.10, "ann_10y": 0.245, "vol": 0.22, "industry": "Enterprise Software / Cloud", "geo": "USA"},
@@ -54,4 +53,3 @@ RAW_DATA = [
     {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Shanghai Fudan Micro", "ticker": "1385.HK", "currency": "HKD", "price": 14.20, "ann_10y": 0.154, "vol": 0.48, "industry": "Analog Nodes / Embedded Chips", "geo": "China"},
     {"category": "Hong Kong Stock Exchange (HKEX)", "name": "InnoScience Technology", "ticker": "2577.HK", "currency": "HKD", "price": 8.50, "ann_10y": 0.050, "vol": 0.50, "industry": "Analog Nodes / Power Systems", "geo": "China"},
     {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Shanghai Biren Technology", "ticker": "6082.HK", "currency": "HKD", "price": 12.10, "ann_10y": 0.060, "vol": 0.55, "industry": "AI Compute / GPUs", "geo": "China"},
-
