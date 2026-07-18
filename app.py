@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL WINDOW PROPERTIES
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. DEFINITIVE SEED MATRIX (ALL 48 KEY GLOBAL TECHNOLOGY ASSETS RESTORED)
+# 2. SEED DATA MATRIX (ALL 48 GLOBAL SEMICONDUCTOR STOCKS PRE-INSTANTIATED)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -112,11 +112,10 @@ with st.spinner("Streaming live price quotes directly from Yahoo Market terminal
     LIVE_DATA = load_live_market_data()
 
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
-if "focused_key" not in st.session_state:
-    st.session_state.focused_key = "NVDA"
-
 if "portfolio_weights" not in st.session_state:
     st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in LIVE_DATA}
+
+# MACRO BUTTON LOGIC: CALCULATE EXACT EQUAL WEIGHTS FOR CHECKED POSITIONS INSTANTLY
 
 
 
