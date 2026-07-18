@@ -12,41 +12,42 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL CANVAS CONTEXT CONFIGURATION
-st.set_page_config(layout="wide", page_title="Portfolio Testing", page_icon="🎮")
+st.set_page_config(layout="wide", page_title="Mario Portfolio Matrix", page_icon="🍄")
 
-NES_RED = "#E60012"
-NES_BLACK = "#000000"
-NES_GRAY = "#8C8C8C"
-NES_GREEN = "#38D038"
-NES_BG = "#1A1A1A"
+MARIO_SKY = "#5C94FC"
+MARIO_GRASS = "#00A800"
+MARIO_BRICK = "#8C5200"
+MARIO_COIN = "#FCD800"
+MARIO_WHITE = "#FFFFFF"
 
-# Clean retro web arcade style injection isolates theme layouts to satisfy strict parsers
+# Programmatic injection of Super Mario overland grass garden palette
 style_html = (
     "<style>"
     "@import url('https://googleapis.com');"
     "html, body, [data-testid='stAppViewContainer'], [data-testid='stHeader'] {"
-    "    background-color: #1A1A1A !important;"
-    "    color: #38D038 !important;"
+    "    background-color: #5C94FC !important;"
+    "    color: #FFFFFF !important;"
     "    font-family: 'Share Tech Mono', monospace !important;"
     "}"
     "h1, h2, h3, h4, h5, h6, label, p, span, .stMarkdown, .stSuccess, .stWarning {"
     "    font-family: 'Share Tech Mono', monospace !important;"
-    "    color: #38D038 !important;"
+    "    color: #FFFFFF !important;"
     "}"
     "div[data-testid='stMetricValue'] > div {"
     "    font-family: 'Press Start 2P', cursive !important;"
-    "    color: #FFFFFF !important;"
+    "    color: #FCD800 !important;"
     "    font-size: 16px !important;"
+    "    text-shadow: 2px 2px 0px #000000;"
     "}"
     "div[data-testid='stMetricLabel'] > div > p {"
-    "    color: #8C8C8C !important;"
+    "    color: #FFFFFF !important;"
     "    letter-spacing: 1px;"
     "}"
     "div.stButton > button {"
     "    font-family: 'Press Start 2P', cursive !important;"
-    "    background-color: #38D038 !important;"
-    "    color: #000000 !important;"
-    "    border: 4px solid #FFFFFF !important;"
+    "    background-color: #E60012 !important;"
+    "    color: #FFFFFF !important;"
+    "    border: 4px solid #8C5200 !important;"
     "    box-shadow: 4px 4px 0px #000000 !important;"
     "    border-radius: 0px !important;"
     "    font-size: 11px !important;"
@@ -54,14 +55,14 @@ style_html = (
     "    width: 100%;"
     "}"
     "div.stButton > button:hover {"
-    "    background-color: #E60012 !important;"
-    "    color: #FFFFFF !important;"
-    "    border-color: #000000 !important;"
+    "    background-color: #FCD800 !important;"
+    "    color: #000000 !important;"
+    "    border-color: #FFFFFF !important;"
     "}"
     "input, select, div[data-baseweb='select'] {"
-    "    background-color: #000000 !important;"
-    "    color: #38D038 !important;"
-    "    border: 2px solid #38D038 !important;"
+    "    background-color: #00A800 !important;"
+    "    color: #FFFFFF !important;"
+    "    border: 3px solid #8C5200 !important;"
     "    border-radius: 0px !important;"
     "}"
     "iframe { display: none !important; }"
@@ -69,7 +70,7 @@ style_html = (
 )
 st.components.v1.html(style_html, height=0, width=0)
 
-# 2. DEFINED DATA PIPELINE DEPLOYMENT (Clean explicit tracking matrices)
+# 2. SEED PIPELINE DATASET GENERATOR
 @st.cache_data
 def get_clean_universe():
     raw_lines = [
@@ -125,7 +126,6 @@ def get_clean_universe():
     compiled = []
     for line in raw_lines:
         p = line.split("|")
-        # FIXED: Explicit matrix value indexing positions map cleanly to avoid parsing errors
         compiled.append([
             p[0], p[1], p[2], p[3], float(p[4]), 
             0.145, 0.282, "420.5B", float(p[7]), p[5], p[6],
@@ -142,8 +142,7 @@ if "focused_key" not in st.session_state:
 if "portfolio_weights" not in st.session_state:
     st.session_state.portfolio_weights = {row["ticker"]: 0 for idx, row in df_universe.iterrows()}
 
-st.title("🕹️ PORTFOLIO TESTING")
-st.markdown("### A Single Family Office Front Page Terminal")
+st.title("🍄 MARIO GARDEN PORTFOLIO PANEL")
 
 # 3. SPLIT WORKSPACE INTERACTIVE PANELS
 panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
@@ -152,10 +151,10 @@ with panel_left:
     st.markdown("#### 📂 REGISTER MATRIX")
     
     categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "Hong Kong Stock Exchange (HKEX)"]
-    selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
+    selected_cat = st.selectbox("Select Mushroom Kingdom Zone", options=categories, index=0)
     
     col_hdr = st.columns([0.6, 2.4, 1.0, 1.0])
-    # FIXED: Layout list blocks index columns individually to prevent structural layout crashes
+    # FIXED: Individual list element index points are targeted to guarantee zero layout crashes
     col_hdr[0].markdown("**TICK**")
     col_hdr[1].markdown("**STOCK ASSET LIST**")
     col_hdr[2].markdown("**ALLOCATION %**")
@@ -174,6 +173,9 @@ with panel_left:
         
         active_ticks[ticker] = row_cols[0].checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0 or st.session_state.portfolio_weights[ticker] == 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
         
+        if row_cols[1].button(f"⭐ {ticker} | {name[:16]}", key=f"lk_{ticker}_{idx}"):
+            st.session_state.focused_key = ticker
+
 
 
 
