@@ -11,119 +11,220 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
+st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
 
-# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL TECHNOLOGY STOCKS EMBEDDED INTEGRALLY)
-@st.cache_data
-def get_definitive_global_universe():
-    assets_data = [
-        # --- Magnificent Seven ---
-        {"ticker": "NVDA", "name": "Nvidia Corp.", "category": "Magnificent Seven", "price": 135.50, "ann_10y": 0.452, "vol": 0.44, "currency": "USD"},
-        {"ticker": "MSFT", "name": "Microsoft Corp.", "category": "Magnificent Seven", "price": 420.10, "ann_10y": 0.245, "vol": 0.22, "currency": "USD"},
-        {"ticker": "AAPL", "name": "Apple Inc.", "category": "Magnificent Seven", "price": 225.40, "ann_10y": 0.221, "vol": 0.20, "currency": "USD"},
-        {"ticker": "GOOGL", "name": "Alphabet Inc.", "category": "Magnificent Seven", "price": 175.60, "ann_10y": 0.195, "vol": 0.24, "currency": "USD"},
-        {"ticker": "AMZN", "name": "Amazon.com Inc.", "category": "Magnificent Seven", "price": 185.30, "ann_10y": 0.212, "vol": 0.28, "currency": "USD"},
-        {"ticker": "META", "name": "Meta Platforms Inc.", "category": "Magnificent Seven", "price": 495.20, "ann_10y": 0.228, "vol": 0.36, "currency": "USD"},
-        {"ticker": "TSLA", "name": "Tesla Inc.", "category": "Magnificent Seven", "price": 210.50, "ann_10y": 0.384, "vol": 0.52, "currency": "USD"},
-        
-        # --- SOXX Top 15 Holdings ---
-        {"ticker": "AMD", "name": "Advanced Micro Devices", "category": "SOXX Top 15 Holdings", "price": 154.40, "ann_10y": 0.315, "vol": 0.42, "currency": "USD"},
-        {"ticker": "MU", "name": "Micron Technology", "category": "SOXX Top 15 Holdings", "price": 94.50, "ann_10y": 0.198, "vol": 0.49, "currency": "USD"},
-        {"ticker": "AVGO", "name": "Broadcom Inc.", "category": "SOXX Top 15 Holdings", "price": 164.80, "ann_10y": 0.294, "vol": 0.27, "currency": "USD"},
-        {"ticker": "AMAT", "name": "Applied Materials", "category": "SOXX Top 15 Holdings", "price": 192.40, "ann_10y": 0.264, "vol": 0.34, "currency": "USD"},
-        {"ticker": "INTC", "name": "Intel Corp.", "category": "SOXX Top 15 Holdings", "price": 28.10, "ann_10y": 0.012, "vol": 0.39, "currency": "USD"},
-        {"ticker": "KLAC", "name": "KLA Corporation", "category": "SOXX Top 15 Holdings", "price": 685.20, "ann_10y": 0.256, "vol": 0.31, "currency": "USD"},
-        {"ticker": "LRCX", "name": "Lam Research Corp.", "category": "SOXX Top 15 Holdings", "price": 842.50, "ann_10y": 0.284, "vol": 0.37, "currency": "USD"},
-        {"ticker": "TXN", "name": "Texas Instruments", "category": "SOXX Top 15 Holdings", "price": 178.60, "ann_10y": 0.142, "vol": 0.23, "currency": "USD"},
-        {"ticker": "MRVL", "name": "Marvell Technology", "category": "SOXX Top 15 Holdings", "price": 68.20, "ann_10y": 0.201, "vol": 0.41, "currency": "USD"},
-        {"ticker": "QCOM", "name": "Qualcomm Inc.", "category": "SOXX Top 15 Holdings", "price": 168.20, "ann_10y": 0.185, "vol": 0.35, "currency": "USD"},
-        {"ticker": "MPWR", "name": "Monolithic Power Systems", "category": "SOXX Top 15 Holdings", "price": 720.40, "ann_10y": 0.312, "vol": 0.33, "currency": "USD"},
-        {"ticker": "NXPI", "name": "NXP Semiconductors N.V.", "category": "SOXX Top 15 Holdings", "price": 265.22, "ann_10y": 0.161, "vol": 0.26, "currency": "USD"},
-        {"ticker": "ADI", "name": "Analog Devices, Inc.", "category": "SOXX Top 15 Holdings", "price": 210.50, "ann_10y": 0.164, "vol": 0.25, "currency": "USD"},
-        
-        # --- Taiwan ---
-        {"ticker": "TSM", "name": "TSMC", "category": "Taiwan", "price": 178.20, "ann_10y": 0.261, "vol": 0.33, "currency": "USD"},
-        {"ticker": "UMC", "name": "United Microelectronics", "category": "Taiwan", "price": 7.80, "ann_10y": 0.114, "vol": 0.36, "currency": "USD"},
-        {"ticker": "5347.TW", "name": "Vanguard International", "category": "Taiwan", "price": 112.50, "ann_10y": 0.095, "vol": 0.32, "currency": "TWD"},
-        {"ticker": "2454.TW", "name": "MediaTek Inc.", "category": "Taiwan", "price": 1240.00, "ann_10y": 0.184, "vol": 0.38, "currency": "TWD"},
-        {"ticker": "3034.TW", "name": "Novatek Microelectronics", "category": "Taiwan", "price": 510.00, "ann_10y": 0.141, "vol": 0.30, "currency": "TWD"},
-        {"ticker": "2379.TW", "name": "Realtek Semiconductor", "category": "Taiwan", "price": 485.00, "ann_10y": 0.162, "vol": 0.34, "currency": "TWD"},
-        {"ticker": "3661.TW", "name": "Alchip Technologies", "category": "Taiwan", "price": 2450.00, "ann_10y": 0.412, "vol": 0.55, "currency": "TWD"},
-        {"ticker": "ASX", "name": "ASE Technology Holding", "category": "Taiwan", "price": 14.50, "ann_10y": 0.124, "vol": 0.29, "currency": "USD"},
-        
-        # --- Japan ---
-        {"ticker": "8035.T", "name": "Tokyo Electron", "category": "Japan", "price": 24500.00, "ann_10y": 0.231, "vol": 0.36, "currency": "JPY"},
-        {"ticker": "6857.T", "name": "Advantest Corp.", "category": "Japan", "price": 5800.00, "ann_10y": 0.252, "vol": 0.39, "currency": "JPY"},
-        {"ticker": "6146.T", "name": "Disco Corp.", "category": "Japan", "price": 41200.00, "ann_10y": 0.342, "vol": 0.41, "currency": "JPY"},
-        {"ticker": "6920.T", "name": "Lasertec Corp.", "category": "Japan", "price": 22400.00, "ann_10y": 0.485, "vol": 0.48, "currency": "JPY"},
-        {"ticker": "7735.T", "name": "SCREEN Holdings", "category": "Japan", "price": 9800.00, "ann_10y": 0.221, "vol": 0.38, "currency": "JPY"},
-        {"ticker": "6525.T", "name": "Kokusai Electric", "category": "Japan", "price": 3100.00, "ann_10y": 0.165, "vol": 0.35, "currency": "JPY"},
-        {"ticker": "285A.T", "name": "Kioxia Holdings", "category": "Japan", "price": 2850.00, "ann_10y": 0.112, "vol": 0.43, "currency": "JPY"},
-        {"ticker": "6723.T", "name": "Renesas Electronics", "category": "Japan", "price": 2450.00, "ann_10y": 0.154, "vol": 0.32, "currency": "JPY"},
-        {"ticker": "4062.T", "name": "Ibiden Co.", "category": "Japan", "price": 4800.00, "ann_10y": 0.132, "vol": 0.33, "currency": "JPY"},
-        {"ticker": "6963.T", "name": "ROHM Co.", "category": "Japan", "price": 1850.00, "ann_10y": 0.084, "vol": 0.29, "currency": "JPY"},
-        
-        # --- South Korea ---
-        {"ticker": "005930.KS", "name": "Samsung Electronics", "category": "South Korea", "price": 68500.00, "ann_10y": 0.112, "vol": 0.31, "currency": "KRW"},
-        {"ticker": "000660.KS", "name": "SK Hynix", "category": "South Korea", "price": 165000.00, "ann_10y": 0.214, "vol": 0.42, "currency": "KRW"},
-        
-        # --- Europe ---
-        {"ticker": "ASML", "name": "ASML Holding N.V.", "category": "Europe", "price": 820.10, "ann_10y": 0.225, "vol": 0.28, "currency": "USD"},
-        {"ticker": "IFX", "name": "Infineon Technologies", "category": "Europe", "price": 34.20, "ann_10y": 0.145, "vol": 0.33, "currency": "EUR"},
-        
-        # --- HKEX / China Nodes ---
-        {"ticker": "0981.HK", "name": "SMIC", "category": "HKEX / China Nodes", "price": 22.40, "ann_10y": 0.125, "vol": 0.45, "currency": "HKD"},
-        {"ticker": "1347.HK", "name": "Hua Hong Semi", "category": "HKEX / China Nodes", "price": 18.50, "ann_10y": 0.091, "vol": 0.41, "currency": "HKD"},
-        {"ticker": "1385.HK", "name": "Shanghai Fudan Micro", "category": "HKEX / China Nodes", "price": 14.20, "ann_10y": 0.154, "vol": 0.48, "currency": "HKD"},
-        {"ticker": "2577.HK", "name": "InnoScience Tech", "category": "HKEX / China Nodes", "price": 8.50, "ann_10y": 0.050, "vol": 0.50, "currency": "HKD"},
-        {"ticker": "6082.HK", "name": "Shanghai Biren Tech", "category": "HKEX / China Nodes", "price": 12.10, "ann_10y": 0.060, "vol": 0.55, "currency": "HKD"},
-        {"ticker": "9903.HK", "name": "Shanghai Iluvatar CoreX", "category": "HKEX / China Nodes", "price": 9.40, "ann_10y": 0.045, "vol": 0.58, "currency": "HKD"}
-    ]
-    return assets_data
+# 2. SEED METADATA REGISTRATION TERMINAL (ALL 48 GLOBAL TECH ASSETS EMBEDDED INTEGRALLY)
+TICKERS_LIST = [
+    # --- Magnificent Seven ---
+    "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA",
+    # --- SOXX Top 15 Holdings ---
+    "AMD", "MU", "AVGO", "AMAT", "INTC", "KLAC", "LRCX", "TXN", "MRVL", "QCOM", "MPWR", "NXPI", "ADI",
+    # --- Taiwan ---
+    "TSM", "UMC", "5347.TW", "2454.TW", "3034.TW", "2379.TW", "3661.TW", "ASX",
+    # --- Japan ---
+    "8035.T", "6857.T", "6146.T", "6920.T", "7735.T", "6525.T", "285A.T", "6723.T", "4062.T", "6963.T",
+    # --- South Korea ---
+    "005930.KS", "000660.KS",
+    # --- Europe ---
+    "ASML", "IFX",
+    # --- HKEX / China Nodes ---
+    "0981.HK", "1347.HK", "1385.HK", "2577.HK", "6082.HK", "9903.HK"
+]
 
+NAMES_LIST = [
+    # --- Magnificent Seven ---
+    "Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com Inc.", "Meta Platforms Inc.", "Tesla Inc.",
+    # --- SOXX Top 15 Holdings ---
+    "Advanced Micro Devices", "Micron Technology", "Broadcom Inc.", "Applied Materials", "Intel Corp.", "KLA Corporation", "Lam Research Corp.", "Texas Instruments", "Marvell Technology", "Qualcomm Inc.", "Monolithic Power Systems", "NXP Semiconductors", "Analog Devices",
+    # --- Taiwan ---
+    "TSMC", "United Microelectronics", "Vanguard International", "MediaTek Inc.", "Novatek Microelectronics", "Realtek Semiconductor", "Alchip Technologies", "ASE Technology Holding",
+    # --- Japan ---
+    "Tokyo Electron", "Advantest Corp.", "Disco Corp.", "Lasertec Corp.", "SCREEN Holdings", "Kokusai Electric", "Kioxia Holdings", "Renesas Electronics", "Ibiden Co.", "ROHM Co.",
+    # --- South Korea ---
+    "Samsung Electronics", "SK Hynix",
+    # --- Europe ---
+    "ASML Holding N.V.", "Infineon Technologies",
+    # --- HKEX / China Nodes ---
+    "SMIC", "Hua Hong Semi", "Shanghai Fudan Micro", "InnoScience Tech", "Shanghai Biren Tech", "Shanghai Iluvatar CoreX"
+]
+
+CATEGORIES_LIST = [
+    "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7",
+    "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX",
+    "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan",
+    "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan",
+    "South Korea", "South Korea",
+    "Europe", "Europe",
+    "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes"
+]
+
+# Caching engine to isolate download loops from component click events
 @st.cache_data(ttl=3600)
 def load_live_market_data():
-    raw_universe = get_definitive_global_universe()
     enriched_data = []
-    for item in raw_universe:
-        ticker_symbol = item["ticker"]
-        last_price = item["price"]
+    for idx, ticker in enumerate(TICKERS_LIST):
+        # Establish structural fallbacks to protect equation parameters
+        last_price = 150.0
+        ann_10y = 0.22
+        vol = 0.32
+        
         try:
-            ticker_obj = yf.Ticker(ticker_symbol)
-            history = ticker_obj.history(period="1d")
+            ticker_obj = yf.Ticker(ticker)
+            history = ticker_obj.history(period="5d")
             if history is not None and not history.empty:
                 last_price = float(history['Close'].iloc[-1])
+                info = ticker_obj.info
+                if info is not None:
+                    fetched_r = info.get('threeYearAverageReturn')
+                    fetched_v = info.get('beta')
+                    if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
+                    if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
             pass
-        enriched_item = item.copy()
-        enriched_item["price"] = last_price
-        enriched_data.append(enriched_item)
+            
+        enriched_data.append({
+            "ticker": ticker,
+            "name": NAMES_LIST[idx],
+            "category": CATEGORIES_LIST[idx],
+            "price": last_price,
+            "ann_10y": ann_10y,
+            "vol": vol,
+            "currency": "USD"
+        })
     return enriched_data
 
-with st.spinner("Streaming live price quotes directly from global tech terminals..."):
+# Execute streaming queries safely
+with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
     LIVE_DATA = load_live_market_data()
 
-# 3. CRASH-PROOF IMMUTABLE STATE SYSTEM
-if "master_portfolio" not in st.session_state:
-    # Key data points are stored using explicit string keys to guarantee index stability
-    state_dict = {}
+# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
+if "focused_key" not in st.session_state:
+    st.session_state.focused_key = "NVDA"
+
+if "portfolio_weights" not in st.session_state:
+    st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in LIVE_DATA}
+
+def select_focused_asset(ticker):
+    st.session_state.focused_key = ticker
+
+st.title("📊 LIVE PORTFOLIO TESTING PANEL")
+
+panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
+
+with panel_left:
+    st.subheader("📂 Register Matrix")
+    
+    categories = ["All", "Mag7", "SOXX", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
+    selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
+    
+    ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
+    ch1.markdown("**TICK**")
+    ch2.markdown("**STOCK ASSET LIST**")
+    ch3.markdown("**ALLOCATION %**")
+    ch4.markdown("**LIVE PRICE**")
+    
+    for idx, item in enumerate(LIVE_DATA):
+        if selected_cat != "All" and item["category"] != selected_cat:
+            continue
+            
+        r1, r2, r3, r4 = st.columns([0.6, 2.4, 1.2, 1.2])
+        ticker = str(item["ticker"])
+        name = str(item["name"])
+        
+        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_live_{ticker}_{idx}", label_visibility="collapsed")
+        
+        r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
+            
+        if is_checked:
+            old_val = st.session_state.portfolio_weights[ticker]
+            initial_val = int(old_val) if old_val > 0 else 0
+            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_live_{ticker}_{idx}", label_visibility="collapsed")
+            st.session_state.portfolio_weights[ticker] = new_alloc
+        else:
+            st.session_state.portfolio_weights[ticker] = 0
+            r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
+            
+        r4.write(f"USD {item['price']:,.2f}")
+
+    st.write("")
+    
+    current_sum = sum(st.session_state.portfolio_weights.values())
+    if current_sum == 100:
+        st.success(f"🎯 READY TO EXECUTE: TOTAL SUM IS {current_sum}%")
+    else:
+        st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
+        
+    years_list = list(range(2016, 2027))
+    entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
+    execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
+
+with panel_right:
+    focus_ticker = st.session_state.focused_key
+    
+    target_record = None
     for item in LIVE_DATA:
-        state_dict[item["ticker"]] = {
-            "SELECT": False,
-            "ALLOCATION %": 0,
-            "name": item["name"],
-            "category": item["category"],
-            "price": item["price"],
-            "currency": item["currency"],
-            "ann_10y": item["ann_10y"],
-            "vol": item["vol"]
-        }
-    st.session_state.master_portfolio = state_dict
+        if item["ticker"] == focus_ticker:
+            target_record = item
+            break
+            
+    if target_record is not None:
+        st.subheader(f"📊 Live Data Profile: {target_record['ticker']}")
+        st.text(f"{target_record['name']} ({target_record['category']})")
+        st.markdown("---")
+        
+        met1, met2 = st.columns(2)
+        met1.metric("LAST CLOSE PRICE", f"USD {target_record['price']:,.2f}")
+        met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
+    else:
+        st.write("Select an active asset to load data parameters.")
 
-st.title("📊 JASMINE'S LIVE PORTFOLIO PANEL")
-
-st.subheader("📂 Global Asset Ledger Matrix")
-categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
-selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
-
-
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH DYNAMIC DAY COUNTER
+if execute_backtest:
+    total_alloc = sum(st.session_state.portfolio_weights.values())
+    if total_alloc != 100:
+        st.error(f"❌ COMPLIANCE REJECTION: Allocation must total exactly 100%. Current sum: {total_alloc}%")
+    else:
+        st.markdown("---")
+        
+        start_date = datetime.date(entry_year, 1, 1)
+        end_date = datetime.date.today()
+        days_elapsed = (end_date - start_date).days
+        years_elapsed = float(days_elapsed) / 365.25
+        
+        st.subheader(f"🎯 Backtest Performance Simulation Results (As of {end_date.strftime('%B %d, %Y')})")
+        st.caption(f"Simulation tracked over exactly **{days_elapsed:,} days** ({years_elapsed:.3f} compounding fractional years).")
+        
+        table_summary = []
+        total_initial_principal = 100000.0
+        total_terminal_value = 0.0
+        
+        for ticker, weight in st.session_state.portfolio_weights.items():
+            if weight <= 0:
+                continue
+                
+            asset_data = None
+            for item in LIVE_DATA:
+                if item["ticker"] == ticker:
+                    asset_data = item
+                    break
+                    
+            if asset_data is not None:
+                r = float(asset_data.get('ann_10y', 0.20))
+                v = float(asset_data.get('vol', 0.30))
+                
+                growth_factor = np.exp((r - 0.5 * (v**2)) * years_elapsed)
+                allocated_base = total_initial_principal * (weight / 100.0)
+                final_v = allocated_base * growth_factor
+                
+                total_terminal_value += final_v
+                perf_pct = (growth_factor - 1.0) * 100
+                
+                table_summary.append({
+                    "Asset Ticker": ticker,
+                    "Allocation Weight": f"{weight}%",
+                    "Principal Base": f"${allocated_base:,.2f}",
+                    "Terminal Value": f"${final_v:,.2f}",
+                    "Absolute Performance": f"{perf_pct:+.1f}%"
+                })
+            
+        if table_summary:
