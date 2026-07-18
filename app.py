@@ -1,10 +1,10 @@
 import streamlit as st
 import numpy as np
 
-# 1. CORE VISUAL WINDOW PROPERTIES
-st.set_page_config(layout="wide", page_title="Global Foundry Core Panel")
+# 1. CORE VISUAL WINDOW SETUP
+st.set_page_config(layout="wide", page_title="Portfolio Panel")
 
-# 2. FIXED SEMICONDUCTOR DATASET UNIVERSE MATRIX
+# 2. US & TAIWAN SEMICONDUCTOR MATRIX DATASET
 RAW_DATA = [
     {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "price": 135.50, "ann_10y": 0.452, "vol": 0.44, "industry": "AI Compute / GPUs", "geo": "USA"},
     {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "price": 420.10, "ann_10y": 0.245, "vol": 0.22, "industry": "Enterprise Software / Cloud", "geo": "USA"},
@@ -13,24 +13,15 @@ RAW_DATA = [
     {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "price": 185.30, "ann_10y": 0.212, "vol": 0.28, "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA"},
     {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "price": 495.20, "ann_10y": 0.228, "vol": 0.36, "industry": "Digital Advertising / Metaverse", "geo": "USA"},
     {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "price": 210.50, "ann_10y": 0.384, "vol": 0.52, "industry": "Automotive / Energy Storage", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "price": 154.40, "ann_10y": 0.315, "vol": 0.42, "industry": "AI Compute / CPUs", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "price": 94.50, "ann_10y": 0.198, "vol": 0.49, "industry": "Memory (HBM / DRAM)", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "price": 164.80, "ann_10y": 0.294, "vol": 0.27, "industry": "Networking / ASICs", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Applied Materials, Inc.", "testing_tag": "Fab", "ticker": "AMAT", "currency": "USD", "price": 192.40, "ann_10y": 0.264, "vol": 0.34, "industry": "Wafer Fab Equipment", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Intel Corporation", "ticker": "INTC", "currency": "USD", "price": 28.10, "ann_10y": 0.012, "vol": 0.39, "industry": "IDM / Foundry Transition", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "KLA Corporation", "ticker": "KLAC", "currency": "USD", "price": 685.20, "ann_10y": 0.256, "vol": 0.31, "industry": "Process Diagnostics Equipment", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Lam Research Corp.", "ticker": "LRCX", "currency": "USD", "price": 842.50, "ann_10y": 0.284, "vol": 0.37, "industry": "Wafer Fab Equipment", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Texas Instruments Inc.", "ticker": "TXN", "currency": "USD", "price": 178.60, "ann_10y": 0.142, "vol": 0.23, "industry": "Analog Nodes / Embedded Chips", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Marvell Technology, Inc.", "ticker": "MRVL", "currency": "USD", "price": 68.20, "ann_10y": 0.201, "vol": 0.41, "industry": "Networking / Infrastructure", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Qualcomm Inc.", "ticker": "QCOM", "currency": "USD", "price": 168.20, "ann_10y": 0.185, "vol": 0.35, "industry": "Mobile Wireless Edge", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "Monolithic Power Systems", "ticker": "MPWR", "currency": "USD", "price": 720.40, "ann_10y": 0.312, "vol": 0.33, "industry": "Analog Nodes / Power Systems", "geo": "USA"},
-    {"category": "SOXX Top 15 Holdings", "name": "NXP Semiconductors N.V.", "ticker": "NXPI", "currency": "USD", "price": 265.22, "ann_10y": 0.161, "vol": 0.26, "industry": "Analog Nodes / Embedded Chips", "geo": "Netherlands"},
-    {"category": "SOXX Top 15 Holdings", "name": "Analog Devices, Inc.", "ticker": "ADI", "currency": "USD", "price": 210.50, "ann_10y": 0.164, "vol": 0.25, "industry": "Analog Nodes / Signal Processing", "geo": "USA"},
+    {"category": "SOXX Top Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "price": 154.40, "ann_10y": 0.315, "vol": 0.42, "industry": "AI Compute / CPUs", "geo": "USA"},
+    {"category": "SOXX Top Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "price": 94.50, "ann_10y": 0.198, "vol": 0.49, "industry": "Memory (HBM / DRAM)", "geo": "USA"},
+    {"category": "SOXX Top Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "price": 164.80, "ann_10y": 0.294, "vol": 0.27, "industry": "Networking / ASICs", "geo": "USA"},
+    {"category": "SOXX Top Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "price": 192.40, "ann_10y": 0.264, "vol": 0.34, "industry": "Wafer Fab Equipment", "geo": "USA"},
     {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "price": 178.20, "ann_10y": 0.261, "vol": 0.33, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
     {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "price": 7.80, "ann_10y": 0.114, "vol": 0.36, "industry": "Pure-Play Foundry", "geo": "Taiwan"}
 ]
 
-# 3. INTERACTIVE STATE ENGINE INITIALIZATION
+# 3. GLOBAL APPLICATION STATE ENGINE
 if "focused_key" not in st.session_state:
     st.session_state.focused_key = "NVDA"
 
@@ -44,7 +35,7 @@ panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 with panel_left:
     st.subheader("📂 Register Matrix")
     
-    categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan"]
+    categories = ["All", "Magnificent Seven", "SOXX Top Holdings", "Taiwan"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
     ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
@@ -61,16 +52,16 @@ with panel_left:
         ticker = str(item["ticker"])
         name = str(item["name"])
         
-        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_v6_{ticker}_{idx}", label_visibility="collapsed")
+        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_final_{ticker}_{idx}", label_visibility="collapsed")
         
-        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_v6_{ticker}_{idx}"):
+        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_final_{ticker}_{idx}"):
             st.session_state.focused_key = ticker
             st.rerun()
             
         if is_checked:
             old_val = st.session_state.portfolio_weights[ticker]
             initial_val = int(old_val) if old_val > 0 else 0
-            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_v6_{ticker}_{idx}", label_visibility="collapsed")
+            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_final_{ticker}_{idx}", label_visibility="collapsed")
             st.session_state.portfolio_weights[ticker] = new_alloc
         else:
             st.session_state.portfolio_weights[ticker] = 0
@@ -86,8 +77,8 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    years_list = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
-    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=years_list, index=4)
+    # FIXED: Written explicitly inside the widget parameters to block markdown filter issues
+    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=[2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], index=4)
     execute_backtest = st.button("🔴 RUN BACKTEST 🔴", use_container_width=True)
 
 with panel_right:
@@ -153,4 +144,12 @@ if execute_backtest:
                     "Principal Base": f"${allocated_base:,.2f}",
                     f"Terminal Value ({current_year})": f"${final_v:,.2f}",
                     "Absolute Performance": f"{perf_pct:+.1f}%"
+                })
+            
+        if table_summary:
+            st.markdown("### 📋 Position Historical Balances Ledger")
+            st.table(table_summary)
+        else:
+            st.error("No active positions selected.")
+
 
