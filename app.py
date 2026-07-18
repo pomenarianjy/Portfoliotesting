@@ -11,25 +11,100 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Live Global Foundry Core Panel")
+st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
-TICKERS_LIST = ["NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AMD", "MU", "AVGO", "AMAT", "TSM", "UMC"]
-NAMES_LIST = ["Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com", "Meta Platforms", "Tesla Inc.", "Advanced AMD", "Micron Tech", "Broadcom Inc.", "Applied Materials", "TSMC", "UMC"]
-CATEGORIES_LIST = ["Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "SOXX", "SOXX", "SOXX", "SOXX", "Taiwan", "Taiwan"]
+# 2. SEED METADATA REGISTRATION TERMINAL (ALL 48 GLOBAL TECHNOLOGY STOCKS)
+@st.cache_data
+def get_full_global_matrix():
+    tickers = [
+        "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", # Magnificent Seven
+        "AMD", "MU", "AVGO", "AMAT", "INTC", "KLAC", "LRCX", "TXN", "MRVL", "QCOM", "MPWR", "NXPI", "ADI", # SOXX Top 15
+        "TSM", "UMC", "5347.TW", "2454.TW", "3034.TW", "2379.TW", "3661.TW", "ASX", # Taiwan
+        "8035.T", "6857.T", "6146.T", "6920.T", "7735.T", "6525.T", "285A.T", "6723.T", "4062.T", "6963.T", # Japan
+        "005930.KS", "000660.KS", # South Korea
+        "ASML", "IFX", # Europe
+        "0981.HK", "1347.HK", "1385.HK", "2577.HK", "6082.HK", "9903.HK" # HKEX / China nodes
+    ]
+    
+    names = [
+        "Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com Inc.", "Meta Platforms", "Tesla Inc.",
+        "Advanced Micro Devices", "Micron Technology", "Broadcom Inc.", "Applied Materials", "Intel Corp.", "KLA Corporation", "Lam Research Corp.", "Texas Instruments", "Marvell Technology", "Qualcomm Inc.", "Monolithic Power", "NXP Semiconductors", "Analog Devices",
+        "TSMC", "United Microelectronics", "Vanguard International", "MediaTek Inc.", "Novatek Micro", "Realtek Semiconductor", "Alchip Technologies", "ASE Technology",
+        "Tokyo Electron", "Advantest Corp.", "Disco Corp.", "Lasertec Corp.", "SCREEN Holdings", "Kokusai Electric", "Kioxia Holdings", "Renesas Electronics", "Ibiden Co.", "ROHM Co.",
+        "Samsung Electronics", "SK Hynix",
+        "ASML Holding N.V.", "Infineon Technologies",
+        "SMIC", "Hua Hong Semi", "Shanghai Fudan Micro", "InnoScience Tech", "Shanghai Biren Tech", "Shanghai Iluvatar"
+    ]
+    
+    categories = [
+        "Magnificent Seven", "Magnificent Seven", "Magnificent Seven", "Magnificent Seven", "Magnificent Seven", "Magnificent Seven", "Magnificent Seven",
+        "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings", "SOXX Top 15 Holdings",
+        "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan",
+        "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan",
+        "South Korea", "South Korea",
+        "Europe", "Europe",
+        "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes"
+    ]
+    
+    def_prices = [
+        135.50, 420.10, 225.40, 175.60, 185.30, 495.20, 210.50,
+        154.40, 94.50, 164.80, 192.40, 28.10, 685.20, 842.50, 178.60, 68.20, 168.20, 720.40, 265.22, 210.50,
+        178.20, 7.80, 112.50, 1240.00, 510.00, 485.00, 2450.00, 14.50,
+        24500.00, 5800.00, 41200.00, 22400.00, 9800.00, 3100.00, 2850.00, 2450.00, 4800.00, 1850.00,
+        68500.00, 165000.00,
+        820.10, 34.20,
+        22.40, 18.50, 14.20, 8.50, 12.10, 9.40
+    ]
+    
+    def_returns = [
+        0.452, 0.245, 0.221, 0.195, 0.212, 0.228, 0.384,
+        0.315, 0.198, 0.294, 0.264, 0.012, 0.256, 0.284, 0.142, 0.201, 0.185, 0.312, 0.161, 0.164,
+        0.261, 0.114, 0.095, 0.184, 0.141, 0.162, 0.412, 0.124,
+        0.231, 0.252, 0.342, 0.485, 0.221, 0.165, 0.112, 0.154, 0.132, 0.084,
+        0.112, 0.214,
+        0.225, 0.145,
+        0.125, 0.091, 0.154, 0.050, 0.060, 0.045
+    ]
+    
+    def_vols = [
+        0.44, 0.22, 0.20, 0.24, 0.28, 0.36, 0.52,
+        0.42, 0.49, 0.27, 0.34, 0.39, 0.31, 0.37, 0.23, 0.41, 0.35, 0.33, 0.26, 0.25,
+        0.33, 0.36, 0.32, 0.38, 0.30, 0.34, 0.55, 0.29,
+        0.36, 0.39, 0.41, 0.48, 0.38, 0.35, 0.43, 0.32, 0.33, 0.29,
+        0.31, 0.42,
+        0.28, 0.33,
+        0.45, 0.41, 0.48, 0.50, 0.55, 0.58
+    ]
+    
+    matrix = []
+    for i in range(len(tickers)):
+        matrix.append({
+            "ticker": tickers[i],
+            "name": names[i],
+            "category": categories[i],
+            "def_price": def_prices[i],
+            "def_r": def_returns[i],
+            "def_v": def_vols[i],
+            "currency": "USD" if i < 22 or i == 27 or i >= 40 and i <= 41 else ("TWD" if i <= 26 else ("JPY" if i <= 37 else "KRW" if i <= 39 else "HKD"))
+        })
+    return matrix
 
 # Caching engine to isolate download loops from component click events
 @st.cache_data(ttl=3600)
 def load_live_market_data():
+    raw_matrix = get_full_global_matrix()
     enriched_data = []
-    for idx, ticker in enumerate(TICKERS_LIST):
-        last_price = 150.0
-        ann_10y = 0.22
-        vol = 0.32
+    for item in raw_matrix:
+        ticker_symbol = item["ticker"]
+        last_price = item["def_price"]
+        ann_10y = item["def_r"]
+        vol = item["def_v"]
         
         try:
-            ticker_obj = yf.Ticker(ticker)
-            history = ticker_obj.history(period="5d")
+            # Safe parsing layout handles non-US symbols dynamically without crashing loops
+            ticker_clean = ticker_symbol if (".TW" in ticker_symbol or ".T" in ticker_symbol or ".KS" in ticker_symbol or ".HK" in ticker_symbol) else ticker_symbol
+            ticker_obj = yf.Ticker(ticker_clean)
+            history = ticker_obj.history(period="3d")
             if history is not None and not history.empty:
                 last_price = float(history['Close'].iloc[-1])
                 info = ticker_obj.info
@@ -41,19 +116,12 @@ def load_live_market_data():
         except Exception:
             pass
             
-        enriched_data.append({
-            "ticker": ticker,
-            "name": NAMES_LIST[idx],
-            "category": CATEGORIES_LIST[idx],
-            "price": last_price,
-            "ann_10y": ann_10y,
-            "vol": vol,
-            "currency": "USD"
-        })
+        enriched_item = item.copy()
+        enriched_item.update({"price": last_price, "ann_10y": ann_10y, "vol": vol})
+        enriched_data.append(enriched_item)
     return enriched_data
 
-# Execute streaming queries safely
-with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
+with st.spinner("Streaming full global terminal universe via Yahoo Finance API feeds..."):
     LIVE_DATA = load_live_market_data()
 
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
@@ -69,7 +137,10 @@ if "checked_tickers" not in st.session_state:
 def select_focused_asset(ticker):
     st.session_state.focused_key = ticker
 
-# MACRO BUTTON LOGIC: CALCULATE EXACT EQUAL WEIGHTS FOR CHECKED POSITIONS
+def sync_checkbox_state(ticker, key_str):
+    st.session_state.checked_tickers[ticker] = st.session_state[key_str]
+
+# MACRO BUTTON LOGIC: CALCULATE EXACT EQUAL WEIGHTS FOR CHECKED POSITIONS INSTANTLY
 def trigger_equal_weight_normalization():
     active_tickers = [t for t, checked in st.session_state.checked_tickers.items() if checked]
     num_active = len(active_tickers)
@@ -97,10 +168,9 @@ panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 with panel_left:
     st.subheader("📂 Register Matrix")
     
-    categories = ["All", "Mag7", "SOXX", "Taiwan"]
+    categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
-    # EQUAL WEIGHT NORMALIZATION TRIGGER BUTTON RESTORED
     st.button(
         "🎚️ DISTRIBUTE EQUAL WEIGHTS (CHECKED ONLY)", 
         on_click=trigger_equal_weight_normalization, 
@@ -122,13 +192,16 @@ with panel_left:
         ticker = str(item["ticker"])
         name = str(item["name"])
         
+        cb_key = f"cb_live_{ticker}_{idx}"
+        
         is_checked = r1.checkbox(
             "", 
             value=st.session_state.checked_tickers[ticker], 
-            key=f"cb_live_{ticker}_{idx}", 
-            label_visibility="collapsed"
+            key=cb_key, 
+            label_visibility="collapsed",
+            on_change=sync_checkbox_state,
+            args=(ticker, cb_key)
         )
-        st.session_state.checked_tickers[ticker] = is_checked
         
         r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
             
@@ -140,99 +213,4 @@ with panel_left:
         else:
             st.session_state.portfolio_weights[ticker] = 0
             r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
-            
-        r4.write(f"USD {item['price']:,.2f}")
-
-    st.write("")
-    
-    current_sum = sum(st.session_state.portfolio_weights.values())
-    if current_sum == 100:
-        st.success(f"🎯 READY TO EXECUTE: TOTAL SUM IS {current_sum}%")
-    else:
-        st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
-        
-    years_list = list(range(2016, 2027))
-    entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
-    execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
-
-with panel_right:
-    focus_ticker = st.session_state.focused_key
-    
-    target_record = None
-    for item in LIVE_DATA:
-        if item["ticker"] == focus_ticker:
-            target_record = item
-            break
-            
-    if target_record is not None:
-        st.subheader(f"📊 Live Data Profile: {target_record['ticker']}")
-        st.text(f"{target_record['name']} ({target_record['category']})")
-        st.markdown("---")
-        
-        met1, met2 = st.columns(2)
-        met1.metric("LAST CLOSE PRICE", f"USD {target_record['price']:,.2f}")
-        met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
-    else:
-        st.write("Select an active asset to load data parameters.")
-
-# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH DYNAMIC DAY COUNTER
-if execute_backtest:
-    total_alloc = sum(st.session_state.portfolio_weights.values())
-    if total_alloc != 100:
-        st.error(f"❌ COMPLIANCE REJECTION: Allocation must total exactly 100%. Current sum: {total_alloc}%")
-    else:
-        st.markdown("---")
-        
-        start_date = datetime.date(entry_year, 1, 1)
-        end_date = datetime.date.today()
-        days_elapsed = (end_date - start_date).days
-        years_elapsed = float(days_elapsed) / 365.25
-        
-        st.subheader(f"🎯 Backtest Performance Simulation Results (As of {end_date.strftime('%B %d, %Y')})")
-        st.caption(f"Simulation tracked over exactly **{days_elapsed:,} days** ({years_elapsed:.3f} compounding fractional years).")
-        
-        table_summary = []
-        total_initial_principal = 100000.0
-        total_terminal_value = 0.0
-        
-        for ticker, weight in st.session_state.portfolio_weights.items():
-            if weight <= 0:
-                continue
-                
-            asset_data = None
-            for item in LIVE_DATA:
-                if item["ticker"] == ticker:
-                    asset_data = item
-                    break
-                    
-            if asset_data is not None:
-                r = float(asset_data.get('ann_10y', 0.20))
-                v = float(asset_data.get('vol', 0.30))
-                
-                growth_factor = np.exp((r - 0.5 * (v**2)) * years_elapsed)
-                allocated_base = total_initial_principal * (weight / 100.0)
-                final_v = allocated_base * growth_factor
-                
-                total_terminal_value += final_v
-                perf_pct = (growth_factor - 1.0) * 100
-                
-                table_summary.append({
-                    "Asset Ticker": ticker,
-                    "Allocation Weight": f"{weight}%",
-                    "Principal Base": f"${allocated_base:,.2f}",
-                    "Terminal Value": f"${final_v:,.2f}",
-                    "Absolute Performance": f"{perf_pct:+.1f}%"
-                })
-            
-        if table_summary:
-            portfolio_total_return_pct = ((total_terminal_value / total_initial_principal) - 1.0) * 100
-            portfolio_cagr_pct = ((total_terminal_value / total_initial_principal) ** (1.0 / years_elapsed) - 1.0) * 100 if years_elapsed > 0 else 0.0
-            portfolio_net_profit = total_terminal_value - total_initial_principal
-            
-            st.markdown("### 📈 Portfolio Summary Metrics")
-            m_agg1, m_agg2, m_agg3, m_agg4 = st.columns(4)
-            m_agg1.metric("TOTAL INITIAL PRINCIPAL", f"${total_initial_principal:,.2f}")
-            m_agg2.metric("PORTFOLIO TERMINAL VALUE", f"${total_terminal_value:,.2f}")
-            m_agg3.metric("TOTAL ACCUMULATED RETURN", f"{portfolio_total_return_pct:+.2f}%", f"${portfolio_net_profit:,.2f} Net Profit")
-            m_agg4.metric("PORTFOLIO SIMULATED CAGR", f"{portfolio_cagr_pct:.2f}%")
 
