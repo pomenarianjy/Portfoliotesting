@@ -103,22 +103,27 @@ def load_live_market_data():
 with st.spinner("Streaming live price quotes directly from global tech terminals..."):
     LIVE_DATA = load_live_market_data()
 
-# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
-if "df_portfolio" not in st.session_state:
-    base_df = pd.DataFrame(LIVE_DATA)
-    base_df.insert(0, "SELECT", False)
-    base_df["ALLOCATION %"] = 0
-    # Set explicit string ticker directly as dataframe row index keys
-    base_df.set_index("ticker", inplace=True, drop=False)
-    st.session_state.df_portfolio = base_df
+# 3. CRASH-PROOF IMMUTABLE STATE SYSTEM
+if "master_portfolio" not in st.session_state:
+    # Key data points are stored using explicit string keys to guarantee index stability
+    state_dict = {}
+    for item in LIVE_DATA:
+        state_dict[item["ticker"]] = {
+            "SELECT": False,
+            "ALLOCATION %": 0,
+            "name": item["name"],
+            "category": item["category"],
+            "price": item["price"],
+            "currency": item["currency"],
+            "ann_10y": item["ann_10y"],
+            "vol": item["vol"]
+        }
+    st.session_state.master_portfolio = state_dict
 
-# CALLBACK: Intercepts table edits perfectly using the active view state context
-def handle_editor_sync():
-    if "portfolio_editor" in st.session_state and "edited_rows" in st.session_state.portfolio_editor:
-        # Generate the exact sub-view map active at the exact second the edit hit the canvas
-        current_cat = st.session_state.get("active_category_filter", "All")
-        if current_cat == "All":
-            active_view = st.session_state.df_portfolio
-        else:
+st.title("📊 JASMINE'S LIVE PORTFOLIO PANEL")
+
+st.subheader("📂 Global Asset Ledger Matrix")
+categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
+selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
 
 
