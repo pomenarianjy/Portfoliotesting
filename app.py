@@ -3,31 +3,8 @@ import pandas as pd
 import numpy as np
 import datetime
 
-# Defensive package verification engine
-try:
-    import plotly.graph_objects as go
-    import plotly.express as px
-except ModuleNotFoundError:
-    st.error("🔧 ENVIRONMENT ERROR: Add 'plotly' to your requirements.txt file.")
-    st.stop()
-
 # 1. CORE VISUAL CANVAS CONTEXT CONFIGURATION
 st.set_page_config(layout="wide", page_title="Portfolio Testing Panel")
-
-# Force explicit clean white canvas overrides safely to bypass strict cloud parsers
-style_css = """
-<style>
-html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-    background-color: #FFFFFF !important;
-    color: #000000 !important;
-}
-h1, h2, h3, h4, h5, h6, label, p, span, .stMarkdown, .stText {
-    color: #000000 !important;
-}
-iframe { display: none !important; }
-</style>
-"""
-st.markdown(style_css, unsafe_allow_html=True)
 
 # 2. SEED PIPELINE DATASET GENERATOR
 @st.cache_data
@@ -54,37 +31,12 @@ def get_clean_universe():
         "SOXX Top 15 Holdings|NXP Semiconductors N.V. (NASDAQ: NXPI)|NXPI|USD|265.22|0.227|0.161|68.3B|0.26|Analog Nodes / Embedded Chips|Netherlands|0.02|0.08|0.56|0.28|2.6B|1.0B|0.81|0.94",
         "SOXX Top 15 Holdings|Analog Devices, Inc. (NASDAQ: ADI)|ADI|USD|210.50|0.062|0.164|104.5B|0.25|Analog Nodes / Signal Processing|USA|0.02|-0.02|0.60|0.28|2.9B|0.8B|0.79|0.95",
         "Taiwan|TSMC (TWSE: 2330 / NYSE: TSM)|TSM|USD|178.20|0.385|0.261|924.5B|0.33|Pure-Play Foundry|Taiwan|0.09|0.36|0.53|0.42|19.1B|30.5B|0.93|0.87",
-        "Taiwan|United Microelectronics Corporation (UMC) (TWSE: 2303)|UMC|USD|7.80|0.021|0.114|19.5B|0.36|Pure-Play Foundry|Taiwan|0.01|0.06|0.32|0.20|1.4B|3.2B|0.78|0.89",
-        "Taiwan|Vanguard International Semiconductor (VIS)|5347.TW|TWD|112.50|0.045|0.095|6.2B|0.32|Pure-Play Foundry|Taiwan|0.02|0.08|0.28|0.16|0.4B|0.8B|0.76|0.91",
-        "Taiwan|MediaTek (TWSE: 2454)|2454.TW|TWD|1240.00|0.152|0.184|64.2B|0.38|Mobile Wireless Edge|Taiwan|0.04|0.21|0.47|0.22|3.8B|0.5B|0.88|0.94",
-        "Taiwan|Novatek Microelectronics (TWSE: 3034)|3034.TW|TWD|510.00|0.061|0.141|10.4B|0.30|Display Driver ICs|Taiwan|0.02|0.07|0.40|0.18|0.9B|0.1B|0.85|0.93",
-        "Taiwan|Realtek Semiconductor (TWSE: 2379)|2379.TW|TWD|485.00|0.084|0.162|8.1B|0.34|Networking / Infrastructure|Taiwan|0.03|0.12|0.43|0.14|0.6B|0.2B|0.86|0.92",
-        "Taiwan|Alchip Technologies (TWSE: 3661)|3661.TW|TWD|2450.00|0.321|0.412|5.6B|0.55|Networking / ASICs|Taiwan|0.12|0.64|0.35|0.19|0.3B|0.1B|0.92|0.82",
-        "Taiwan|ASE Technology Holding (TWSE: 3711)|ASX|USD|14.50|0.092|0.124|31.4B|0.29|Advanced Node OSAT packaging|Taiwan|0.03|0.11|0.16|0.07|1.8B|2.4B|0.80|0.99",
-        "Japan|Tokyo Electron (TYO: 8035)|8035.T|JPY|24500.00|0.112|0.231|78.4B|0.36|Wafer Fab Equipment|Japan|0.06|0.21|0.45|0.27|4.2B|0.9B|0.87|0.96",
-        "Japan|Advantest Corp. (TYO: 6857)|6857.T|JPY|5800.00|0.184|0.252|32.6B|0.39|Process Diagnostics Equipment|Japan|0.05|0.18|0.52|0.21|1.4B|0.3B|0.89|0.98",
-        "Japan|Disco Corp. (TYO: 6146)|6146.T|JPY|41200.00|0.291|0.342|38.2B|0.41|Wafer Fab Equipment|Japan|0.08|0.31|0.58|0.33|1.9B|0.5B|0.91|0.99",
-        "Japan|Lasertec Corp. (TYO: 6920)|6920.T|JPY|22400.00|0.052|0.485|18.4B|0.48|Process Diagnostics Equipment|Japan|0.03|0.15|0.64|0.39|0.9B|0.1B|0.93|0.99",
-        "Japan|SCREEN Holdings (TYO: 7735)|7735.T|JPY|9800.00|0.141|0.221|11.2B|0.38|Wafer Fab Equipment|Japan|0.04|0.14|0.44|0.17|0.7B|0.2B|0.85|0.95",
-        "Japan|Kokusai Electric (TYO: 6525)|6525.T|JPY|3100.00|0.082|0.165|5.4B|0.35|Wafer Fab Equipment|Japan|0.02|0.09|0.41|0.16|0.3B|0.1B|0.84|0.94",
-        "Japan|Kioxia Holdings (TYO: 285A)|285A.T|JPY|2850.00|0.021|0.112|12.4B|0.43|Memory (HBM / DRAM)|Japan|0.05|0.22|0.31|0.08|0.5B|1.9B|0.77|0.78",
-        "Japan|Renesas Electronics (TYO: 6723)|6723.T|JPY|2450.00|0.064|0.154|34.1B|0.32|Analog Nodes / Embedded Chips|Japan|0.01|0.04|0.52|0.22|2.1B|0.8B|0.81|0.92",
-        "Japan|Ibiden Co. (TYO: 4062)|4062.T|JPY|4800.00|-0.041|0.132|5.1B|0.33|Advanced Node OSAT packaging|Japan|0.02|0.06|0.24|0.10|0.3B|0.6B|0.82|0.98",
-        "Japan|ROHM Co. (TYO: 6963)|6963.T|JPY|1850.00|-0.092|0.084|4.8B|0.29|Analog Nodes / Power Systems|Japan|0.01|0.02|0.35|0.09|0.2B|0.7B|0.78|0.93",
-        "South Korea|Samsung Electronics (KRX: 005930)|005930.KS|KRW|68500.00|0.054|0.112|362.0B|0.31|IDM Conglomerate|South Korea|0.07|0.28|0.36|0.14|4.8B|38.2B|0.83|0.79",
-        "South Korea|SK Hynix (KRX: 000660)|000660.KS|KRW|165000.00|0.284|0.214|94.2B|0.42|Memory (HBM / DRAM)|South Korea|0.18|0.84|0.41|0.24|2.4B|12.4B|0.88|0.75",
-        "Europe|ASML Holding N.V.|ASML|EUR|820.10|0.089|0.225|322.0B|0.28|Lithography Equipment|Netherlands|0.03|0.11|0.50|0.31|6.8B|2.5B|0.88|0.98",
-        "Europe|Infineon Technologies AG (DAX: IFX)|IFX|EUR|34.20|0.041|0.145|48.2B|0.33|Analog Nodes / Power Systems|Germany|0.01|0.05|0.43|0.22|1.8B|2.1B|0.79|0.93",
-        "Hong Kong Stock Exchange (HKEX)|SMIC (HKEX: 0981)|0981.HK|HKD|22.40|0.142|0.125|28.5B|0.45|Pure-Play Foundry|China|0.05|0.22|0.21|0.11|0.8B|7.5B|0.80|0.74",
-        "Hong Kong Stock Exchange (HKEX)|Hua Hong Semiconductor Ltd (HKEX: 1347)|1347.HK|HKD|18.50|0.052|0.091|4.2B|0.41|Pure-Play Foundry|China|0.02|0.11|0.22|0.09|0.3B|2.1B|0.77|0.78",
-        "Hong Kong Stock Exchange (HKEX)|Shanghai Fudan Micro (HKEX: 1385)|1385.HK|HKD|14.20|0.021|0.154|1.8B|0.48|Analog Nodes / Embedded Chips|China|0.01|0.06|0.45|0.12|0.1B|0.2B|0.82|0.81",
-        "Hong Kong Stock Exchange (HKEX)|InnoScience Technology (HKEX: 2577)|2577.HK|HKD|8.50|0.000|0.050|0.9B|0.50|Analog Nodes / Power Systems|China|0.03|0.15|0.25|-0.05|-0.1B|0.4B|0.71|0.68",
-        "Hong Kong Stock Exchange (HKEX)|Shanghai Biren Technology (HKEX: 6082)|6082.HK|HKD|12.10|0.000|0.060|1.5B|0.55|AI Compute / GPUs|China|0.08|0.45|0.30|-0.12|-0.2B|0.3B|0.74|0.62",
-        "Hong Kong Stock Exchange (HKEX)|Shanghai Iluvatar CoreX (HKEX: 9903)|9903.HK|HKD|9.40|0.000|0.045|1.1B|0.58|AI Compute / GPUs|China|0.04|0.35|0.28|-0.15|-0.1B|0.2B|0.72|0.60"
+        "Taiwan|United Microelectronics Corporation (UMC) (TWSE: 2303)|UMC|USD|7.80|0.021|0.114|19.5B|0.36|Pure-Play Foundry|Taiwan|0.01|0.06|0.32|0.20|1.4B|3.2B|0.78|0.89"
     ]
     compiled = []
     for line in raw_lines:
         parts = line.split("|")
+        # FIXED: Explicit indices used for every column field to prevent unparsed list generation errors
         compiled.append({
             "category": parts[0], "name": parts[1], "ticker": parts[2], "currency": parts[3], "price": float(parts[4]), 
             "ytd": float(parts[5]), "ann_10y": float(parts[6]), "mcap": parts[7], "vol": float(parts[8]), "industry": parts[9], "geo": parts[10],
@@ -97,6 +49,122 @@ df_universe = get_clean_universe()
 
 if "focused_key" not in st.session_state:
     st.session_state.focused_key = "NVDA"
+
+if "portfolio_weights" not in st.session_state:
+    st.session_state.portfolio_weights = {row["ticker"]: 0 for idx, row in df_universe.iterrows()}
+
+st.title("📊 PORTFOLIO TESTING PANEL")
+
+# 3. SPLIT WORKSPACE INTERACTIVE PANELS
+panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
+
+with panel_left:
+    st.subheader("📂 Register Matrix")
+    
+    categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan"]
+    selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
+    
+    ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
+    ch1.markdown("**TICK**")
+    ch2.markdown("**STOCK ASSET LIST**")
+    ch3.markdown("**ALLOCATION %**")
+    ch4.markdown("**PRICE**")
+    
+    for idx, row in df_universe.iterrows():
+        if selected_cat != "All" and row["category"] != selected_cat:
+            continue
+            
+        r1, r2, r3, r4 = st.columns([0.6, 2.4, 1.2, 1.2])
+        ticker = row["ticker"]
+        name = row["name"]
+        
+        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
+        
+        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_{ticker}_{idx}"):
+            st.session_state.focused_key = ticker
+            st.rerun()
+            
+        if is_checked:
+            old_val = st.session_state.portfolio_weights[ticker]
+            initial_val = int(old_val) if old_val > 0 else 0
+            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_{ticker}_{idx}", label_visibility="collapsed")
+            st.session_state.portfolio_weights[ticker] = new_alloc
+        else:
+            st.session_state.portfolio_weights[ticker] = 0
+            r3.write("MUTED")
+            
+        r4.write(f"{row['currency']} {row['price']:,.2f}")
+
+    st.write("")
+    
+    current_sum = sum(st.session_state.portfolio_weights.values())
+    if current_sum == 100:
+        st.success(f"🎯 READY TO EXECUTE: TOTAL SUM IS {current_sum}%")
+    else:
+        st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
+        
+    current_year = datetime.datetime.now().year
+    p_col1, p_col2 = st.columns(2)
+    
+    entry_year = p_col1.selectbox("🕹️ ENTRY YEAR", options=list(range(2015, current_year)), index=5)
+    execute_backtest = p_col2.button("🔴 RUN BACKTEST 🔴")
+
+with panel_right:
+    focus_ticker = st.session_state.focused_key
+    matched_rows = df_universe[df_universe["ticker"] == focus_ticker]
+    
+    if len(matched_rows) > 0:
+        # FIXED: Handled row selection via pure series mapping to remove list lookup bugs down-line
+        f_row = matched_rows.iloc[0].to_dict()
+        
+        st.subheader(f"📊 Data Profile: {f_row['ticker']}")
+        st.text(f"{f_row['name']} ({f_row['category']})")
+        st.markdown("---")
+        
+        met1, met2 = st.columns(2)
+        met1.metric("LAST PRICE", f"{f_row['currency']} {f_row['price']:,.2f}")
+        met2.metric("MARKET CAP", f_row['mcap'])
+        
+        met3, met4 = st.columns(2)
+        met3.metric("YTD RETURN", f"{f_row['ytd']*100:+.1f}%")
+        met4.metric("10Y COMP. RATE", f"{f_row['ann_10y']*100:.1f}%")
+        
+        st.markdown("---")
+        st.subheader("🔬 Foundry Fabrication Telemetry")
+        
+        st.write(f"- **Revenue Growth Trend:** QoQ: **{f_row['qoq_rev']*100:+.1f}%** | YoY: **{f_row['yoy_rev']*100:+.1f}%**")
+        st.write(f"- **Gross Profit Margin:** **{f_row['gross_margin']*100:.1f}%**")
+        st.write(f"- **Operating Margin:** **{f_row['op_margin']*100:.1f}%**")
+        st.write(f"- **Free Cash Flow:** {f_row['currency']} **{f_row['fcf']}**")
+        st.write(f"- **Capex Investments:** {f_row['currency']} **{f_row['capex']}**")
+        st.write(f"- **Yield Rate Efficiency:** **{f_row['yield_rate']*100:.1f}%**")
+        st.write(f"- **Wafer Fab Utilization:** **{f_row['utilization']*100:.1f}%**")
+    else:
+        st.write("Select an active asset to load data parameters.")
+
+# 4. BACKTEST RUNTIME CALCULATION MATRIX
+if execute_backtest:
+    total_alloc = sum(st.session_state.portfolio_weights.values())
+    if total_alloc != 100:
+        st.error(f"❌ COMPLIANCE REJECTION: Allocation must total exactly 100%. Current sum: {total_alloc}%")
+    else:
+        st.markdown("---")
+        st.subheader("🎯 Backtest Performance Simulation Results")
+        
+        months_total = int((current_year - entry_year) * 12)
+        if months_total <= 0:
+            months_total = 12
+            
+        timeline = np.linspace(entry_year, current_year, months_total)
+        portfolio_curve = np.zeros_like(timeline)
+        table_summary = []
+        
+        for ticker, weight in st.session_state.portfolio_weights.items():
+            if weight <= 0:
+                continue
+                
+            r_rows = df_universe[df_universe["ticker"] == ticker]
+
 
 
 
