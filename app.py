@@ -3,15 +3,15 @@ import pandas as pd
 import numpy as np
 import datetime
 
-# Robust library loader gate
+# Defensive package verification engine
 try:
     import plotly.graph_objects as go
     import plotly.express as px
 except ModuleNotFoundError:
-    st.error("🔧 ENVIRONMENT RECONSTRUCTION ERROR: Add 'plotly' to your requirements.txt file directory structure.")
+    st.error("🔧 ENVIRONMENT ERROR: Add 'plotly' to your requirements.txt file.")
     st.stop()
 
-# 1. VISUAL MATRIX GRAPHICS SETUP (NINTENDO ACCENT MATRIX)
+# 1. CORE VISUAL CANVAS CONTEXT CONFIGURATION
 st.set_page_config(layout="wide", page_title="Portfolio Testing", page_icon="🎮")
 
 NES_RED = "#E60012"
@@ -70,7 +70,7 @@ st.markdown("""
 </style>
 """, unsafe_html=True)
 
-# 2. STRATIFIED SYSTEM SEMICONDUCTOR DATASET
+# 2. HIGH-DENSITY CHIP EQUIPMENT & DESIGNS REGISTER DATA
 @st.cache_data
 def get_universe_data():
     return {
@@ -108,15 +108,14 @@ def get_universe_data():
 
 universe = get_universe_data()
 
-# FIXED: Default state maps directly to first valid string element index instead of key list
 if "focused_stock" not in st.session_state:
     st.session_state.focused_stock = list(universe.keys())[0]
 
-# Global Headers
+# Display Title Headers
 st.markdown('<div class="retro-title">PORTFOLIO TESTING</div>', unsafe_html=True)
 st.markdown('<div class="retro-subtitle">A Single Family Office Front Page Panel</div>', unsafe_html=True)
 
-# 3. SPLIT WORKSPACE DESKTOP LAYOUT
+# 3. SPLIT WORKSPACE INTERACTIVE PANELS
 panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 
 with panel_left:
@@ -136,13 +135,11 @@ with panel_left:
         
         active_ticks[key] = row_cols.checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
         
-        # FIXED: Pressing stock name switches session focus cleanly and instantly refreshes views
         if row_cols.button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
             st.session_state.focused_stock = key
             st.rerun()
             
         if active_ticks[key]:
-            # Allocations default split cleanly to sum to exactly 100% out of the gate
             allocations[key] = row_cols.number_input("", min_value=0, max_value=100, value=20, step=5, key=f"al_{idx}", label_visibility="collapsed")
         else:
             allocations[key] = 0
@@ -152,7 +149,6 @@ with panel_left:
     
     st.markdown("<br>", unsafe_html=True)
     
-    # Dynamic Date Tracking Boundary Adjustments
     current_year = datetime.datetime.now().year
     param_col1, param_col2 = st.columns(2)
     entry_year = param_col1.selectbox("🎮 RETRO ENTRY YEAR", options=list(range(2015, current_year)), index=5)
@@ -193,7 +189,6 @@ with panel_right:
     util_color = "red" if util < 80 else "green"
     st.markdown(f"**Wafer Fab Utilization:** :{util_color}[**{util:.1f}%**] (Sub-80% drops crush margins)")
     
-    # Localised micro plot trace mapping
     np.random.seed(hash(focus_key) % 500)
     trace = f_data['price'] * np.cumprod(1 + np.random.normal(0.0005, 0.015, 60))
     fig_spark = go.Figure(go.Scatter(x=np.arange(60), y=trace, mode='lines', line=dict(color=NES_RED, width=3)))
@@ -202,19 +197,18 @@ with panel_right:
     
     st.markdown('</div>', unsafe_html=True)
 
-# 4. LOWER DATA BLOCKS: ENGINE CALCULATION COMPUTATIONS
+# 4. BACKTEST RUNTIME CALCULATION MATRIX
 if execute_backtest:
     total_alloc = sum(allocations.values())
     
     if total_alloc != 100:
-        st.error(f"⚠️ ALLOCATION COMPLIANCE EXCEPTION: Target weights equal {total_alloc}%. Rebalance values to hit exactly 100%.")
+        st.error(f"⚠️ ALLOCATION ERROR: Total weights equal {total_alloc}%. Rebalance values to hit exactly 100%.")
     else:
         st.markdown("<hr style='border:2px solid #000; margin:25px 0;'/>", unsafe_html=True)
-        st.success("🎯 MATRIX COMPILATION INGESTION COMPLETED. RENDER ENGINE GENERATING RUNTIME TRACES...")
+        st.success("🎯 MATRIX COMPILATION INGESTION COMPLETED.")
         
         filtered_positions = {k: v for k, v in allocations.items() if v > 0}
         
-        # FIXED: Timeline dynamically shifts end limits up to the current operational calendar year
         months_total = int((current_year - entry_year) * 12)
         if months_total <= 0:
             months_total = 12
@@ -223,7 +217,20 @@ if execute_backtest:
         portfolio_curve = np.zeros_like(timeline) + 100.0
         table_summary = []
         
+        ind_weights = {}
+        geo_weights = {}
+        
         for asset, weight in filtered_positions.items():
+            r = universe[asset]['ann_10y']
+            v = universe[asset]['vol']
+            
+            # Map tracking data for industry and country pies
+            ind = universe[asset]['industry']
+            geo = universe[asset]['geo']
+            ind_weights[ind] = ind_weights.get(ind, 0) + weight
+            geo_weights[geo] = geo_weights.get(geo, 0) + weight
+            
+            asset_curve = 100.0 * np.exp((r - 0.5 * (v**2)) * (timeline - entry_year))
 
             
 
