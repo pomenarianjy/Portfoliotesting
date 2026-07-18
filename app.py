@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. DEFINITIVE SEED MATRIX (ALL 48 GLOBAL Technology ASSETS EMBEDDED INTEGRALLY)
+# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL Technology ASSETS EMBEDDED INTEGRALLY)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -123,6 +123,3 @@ else:
 
 col_btn1, col_btn2 = st.columns(2)
 if col_btn1.button("🎚️ EQUAL WEIGHT DISTRIBUTE (CHECKED STOCKS ONLY)", use_container_width=True):
-
-
-
