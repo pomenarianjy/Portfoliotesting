@@ -10,10 +10,10 @@ except ModuleNotFoundError:
     st.error("🔧 ENVIRONMENT ERROR: Add 'yfinance' to your requirements.txt file.")
     st.stop()
 
-# 1. CORE VISUAL WINDOW PROPERTIES
+# 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED DATA MATRIX (ALL 48 GLOBAL SEMICONDUCTOR STOCKS PRE-INSTANTIATED)
+# 2. DEFINITIVE SEED MATRIX (ALL 48 GLOBAL ASSETS RESTORED IN AN ULTRA-FAST FLAT MATRIX)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -92,15 +92,9 @@ def load_live_market_data():
         vol = item["def_v"]
         try:
             ticker_obj = yf.Ticker(ticker_symbol)
-            history = ticker_obj.history(period="3d")
+            history = ticker_obj.history(period="1d")
             if history is not None and not history.empty:
                 last_price = float(history['Close'].iloc[-1])
-                info = ticker_obj.info
-                if info is not None:
-                    fetched_r = info.get('threeYearAverageReturn')
-                    fetched_v = info.get('beta')
-                    if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
-                    if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
             pass
         enriched_item = item.copy()
@@ -108,14 +102,24 @@ def load_live_market_data():
         enriched_data.append(enriched_item)
     return enriched_data
 
-with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
+with st.spinner("Streaming live price quotes directly from global tech terminals..."):
     LIVE_DATA = load_live_market_data()
 
-# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
-if "portfolio_weights" not in st.session_state:
-    st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in LIVE_DATA}
+# Convert seed list to an isolated main pandas grid data structure
+if "df_portfolio" not in st.session_state:
+    base_df = pd.DataFrame(LIVE_DATA)
+    base_df.insert(0, "SELECT", False)
+    base_df["ALLOCATION %"] = 0
+    st.session_state.df_portfolio = base_df
 
-# MACRO BUTTON LOGIC: CALCULATE EXACT EQUAL WEIGHTS FOR CHECKED POSITIONS INSTANTLY
+st.title("📊 JASMINE'S LIVE PORTFOLIO PANEL")
+
+# 3. HIGH-SPEED SELECTION MATRIX CONTAINER
+st.subheader("📂 Global Asset Ledger Matrix")
+categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
+selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
+
+
 
 
 
