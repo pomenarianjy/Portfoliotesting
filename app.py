@@ -14,19 +14,19 @@ st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
 
 # 2. SEED METADATA MATRIX FOR LIVE FETCHING
 RAW_DATA = [
-    {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA"},
-    {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA"},
-    {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA"},
-    {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA"},
-    {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA"},
-    {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA"},
-    {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA"},
-    {"category": "SOXX Top Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA"},
-    {"category": "SOXX Top Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA"},
-    {"category": "SOXX Top Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA"},
-    {"category": "SOXX Top Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA"},
-    {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan"}
+    {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA", "def_r": 0.452, "def_v": 0.44},
+    {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA", "def_r": 0.245, "def_v": 0.22},
+    {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA", "def_r": 0.221, "def_v": 0.20},
+    {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA", "def_r": 0.195, "def_v": 0.24},
+    {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "def_r": 0.212, "def_v": 0.28},
+    {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA", "def_r": 0.228, "def_v": 0.36},
+    {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA", "def_r": 0.384, "def_v": 0.52},
+    {"category": "SOXX Top Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA", "def_r": 0.315, "def_v": 0.42},
+    {"category": "SOXX Top Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA", "def_r": 0.198, "def_v": 0.49},
+    {"category": "SOXX Top Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA", "def_r": 0.294, "def_v": 0.27},
+    {"category": "SOXX Top Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA", "def_r": 0.264, "def_v": 0.34},
+    {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_r": 0.261, "def_v": 0.33},
+    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_r": 0.114, "def_v": 0.36}
 ]
 
 # Cache live pricing data to prevent API throttling on component click loops
@@ -35,30 +35,32 @@ def fetch_live_market_data():
     enriched_data = []
     for item in RAW_DATA:
         ticker_symbol = item["ticker"]
+        last_price = item.get("def_price", 150.0)
+        ann_10y = item["def_r"]
+        vol = item["def_v"]
+        
         try:
             ticker_obj = yf.Ticker(ticker_symbol)
             history = ticker_obj.history(period="5d")
             
-            if not history.empty:
-                # Target the last valid completed trading close value dynamically
+            if history is not None and not history.empty:
                 last_price = float(history['Close'].iloc[-1])
-                
-                # Derive estimated historical proxies safely from internal tables
                 info = ticker_obj.info
-                ann_10y = info.get('threeYearAverageReturn', 0.22) if info else 0.22
-                vol = info.get('beta', 1.2) * 0.25 if info else 0.30
-                if ann_10y is None or ann_10y == 0: ann_10y = 0.20
-            else:
-                last_price, ann_10y, vol = 100.0, 0.20, 0.30
+                if info is not None:
+                    fetched_r = info.get('threeYearAverageReturn')
+                    fetched_v = info.get('beta')
+                    
+                    if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
+                    if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
-            last_price, ann_10y, vol = 100.0, 0.20, 0.30
+            pass # Keep default values if API fails
             
         enriched_item = item.copy()
         enriched_item.update({"price": last_price, "ann_10y": ann_10y, "vol": vol})
         enriched_data.append(enriched_item)
     return enriched_data
 
-# Execute live download streams
+# Execute live download streams safely
 with st.spinner("Streaming live price quotes directly from market terminals..."):
     LIVE_DATA = fetch_live_market_data()
 
@@ -147,7 +149,7 @@ with panel_right:
     else:
         st.write("Select an active asset to load data parameters.")
 
-# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH EXACT DAILY COUNT UNTIL TODAY
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH STRICT TYPE-SAFETY WRAPPERS
 if execute_backtest:
     total_alloc = sum(st.session_state.portfolio_weights.values())
     if total_alloc != 100:
@@ -179,8 +181,9 @@ if execute_backtest:
                     break
                     
             if asset_data is not None:
-                r = float(asset_data['ann_10y'])
-                v = float(asset_data['vol'])
+                # GUARANTEED NUMERIC TYPE-CASTING TO PREVENT NONE-TYPE MATH CRASHES
+                r = float(asset_data.get('ann_10y', 0.20))
+                v = float(asset_data.get('vol', 0.30))
                 
                 growth_factor = np.exp((r - 0.5 * (v**2)) * years_elapsed)
                 allocated_base = total_initial_principal * (weight / 100.0)
@@ -192,13 +195,6 @@ if execute_backtest:
                 table_summary.append({
                     "Asset Ticker": ticker,
                     "Allocation Weight": f"{weight}%",
-                    "Principal Base": f"${allocated_base:,.2f}",
-                    f"Terminal Value ({end_date.strftime('%b %d')})": f"${final_v:,.2f}",
-                    "Absolute Performance": f"{perf_pct:+.1f}%"
-                })
-            
-        if table_summary:
-            portfolio_total_return_pct = ((total_terminal_value / total_initial_principal) - 1.0) * 100
-            portfolio_cagr_pct = ((total_terminal_value / total_initial_principal) ** (1.0 / years_elapsed) - 1.0) * 100 if years_elapsed > 0 else 0.0
+
 
 
