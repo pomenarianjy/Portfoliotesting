@@ -20,7 +20,7 @@ NES_GRAY = "#8C8C8C"
 NES_GREEN = "#38D038"
 NES_BG = "#F8F8F8"
 
-# Inject style parameters safely via flat string variables to bypass line parsing glitches
+# Safe programmatic structural injection of global theme overrides to bypass strict text parsers
 style_html = "<style>@import url('https://googleapis.com'); html, body, [data-testid='stAppViewContainer'] { background-color: #F8F8F8; color: #000000; font-family: 'Share Tech Mono', monospace; } .retro-title { font-family: 'Press Start 2P', cursive; color: #E60012; font-size: 26px; text-shadow: 2px 2px 0px #8C8C8C; margin-bottom: 2px; } .retro-subtitle { font-family: 'Share Tech Mono', monospace; color: #000000; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #E60012; padding-bottom: 6px; margin-bottom: 20px; } iframe { display: none; }</style>"
 st.components.v1.html(style_html, height=0, width=0)
 
@@ -76,7 +76,6 @@ with panel_left:
     st.markdown("### 🕹️ TICKETING MATRIX REGISTER")
     header_cols = st.columns([0.6, 2.2, 1.2, 1.2])
     
-    # FIXED: Index assignments mapped directly to handle column headers without crashing
     header_cols[0].markdown("**TICK**")
     header_cols[1].markdown("**STOCK (ENG / TICKER)**")
     header_cols[2].markdown("**ALLOCATION %**")
@@ -97,16 +96,19 @@ with panel_left:
             allocations[key] = row_cols[2].number_input("", min_value=0, max_value=100, value=20, step=5, key=f"al_{idx}", label_visibility="collapsed")
         else:
             allocations[key] = 0
-            row_cols[2].markdown("<span style='color:#8C8C8C;'>MUTED</span>", unsafe_html=True)
+            row_cols[2].write("MUTED")
             
         row_cols[3].write(f"{data['currency']} {data['price']:,.2f}")
     
-    st.markdown("<br>", unsafe_html=True)
+    # FIXED: Replaced unsafe HTML break tags with native text spacing rules to satisfy Python 3.14 constraints
+    st.write("")
+    
     current_year = datetime.datetime.now().year
     param_col1, param_col2 = st.columns(2)
     entry_year = param_col1.selectbox("🎮 RETRO ENTRY YEAR", options=list(range(2015, current_year)), index=5)
-    st.markdown("<div style='padding-top: 10px;'></div>", unsafe_html=True)
-    execute_backtest = st.button("🔴 DECIDED 🔴")
+    
+    st.write("")
+    execute_backtest = param_col2.button("🔴 DECIDED 🔴")
 
 with panel_right:
     focus_key = st.session_state.focused_stock
@@ -190,6 +192,10 @@ if execute_backtest:
         fig_main.update_traces(line_color=NES_GREEN, line_width=4)
         st.plotly_chart(fig_main, use_container_width=True)
         
+        st.markdown("### 📋 SYSTEM BALANCES ENGINE LEDGER")
+        st.table(pd.DataFrame(table_summary))
+        
+
 
         
 
