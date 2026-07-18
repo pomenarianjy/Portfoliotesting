@@ -11,21 +11,21 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Live Global Foundry Core Panel")
+st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
 
 # 2. SEED METADATA MATRIX FOR LIVE FETCHING
 RAW_DATA = [
-    {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA", "def_price": 135.50, "def_r": 0.452, "def_v": 0.44},
-    {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA", "def_price": 420.10, "def_r": 0.245, "def_v": 0.22},
-    {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA", "def_price": 225.40, "def_r": 0.221, "def_v": 0.20},
-    {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA", "def_price": 175.60, "def_r": 0.195, "def_v": 0.24},
-    {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "def_price": 185.30, "def_r": 0.212, "def_v": 0.28},
-    {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA", "def_price": 495.20, "def_r": 0.228, "def_v": 0.36},
-    {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA", "def_price": 210.50, "def_r": 0.384, "def_v": 0.52},
-    {"category": "SOXX Top Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA", "def_price": 154.40, "def_r": 0.315, "def_v": 0.42},
-    {"category": "SOXX Top Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA", "def_price": 94.50, "def_r": 0.198, "def_v": 0.49},
-    {"category": "SOXX Top Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA", "def_price": 164.80, "def_r": 0.294, "def_v": 0.27},
-    {"category": "SOXX Top Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA", "def_price": 192.40, "def_r": 0.264, "def_v": 0.34},
+    {"category": "Mag7", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA", "def_price": 135.50, "def_r": 0.452, "def_v": 0.44},
+    {"category": "Mag7", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA", "def_price": 420.10, "def_r": 0.245, "def_v": 0.22},
+    {"category": "Mag7", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA", "def_price": 225.40, "def_r": 0.221, "def_v": 0.20},
+    {"category": "Mag7", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA", "def_price": 175.60, "def_r": 0.195, "def_v": 0.24},
+    {"category": "Mag7", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "def_price": 185.30, "def_r": 0.212, "def_v": 0.28},
+    {"category": "Mag7", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA", "def_price": 495.20, "def_r": 0.228, "def_v": 0.36},
+    {"category": "Mag7", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA", "def_price": 210.50, "def_r": 0.384, "def_v": 0.52},
+    {"category": "SOXX", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA", "def_price": 154.40, "def_r": 0.315, "def_v": 0.42},
+    {"category": "SOXX", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA", "def_price": 94.50, "def_r": 0.198, "def_v": 0.49},
+    {"category": "SOXX", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA", "def_price": 164.80, "def_r": 0.294, "def_v": 0.27},
+    {"category": "SOXX", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA", "def_price": 192.40, "def_r": 0.264, "def_v": 0.34},
     {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_price": 178.20, "def_r": 0.261, "def_v": 0.33},
     {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_price": 7.80, "def_r": 0.114, "def_v": 0.36}
 ]
@@ -54,14 +54,14 @@ def fetch_live_market_data():
                     if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
                     if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
-            pass
+            pass # Keep default fallbacks safely if Yahoo is down or throttling
             
         enriched_item = item.copy()
         enriched_item.update({"price": last_price, "ann_10y": ann_10y, "vol": vol})
         enriched_data.append(enriched_item)
     return enriched_data
 
-# Execute streaming queries safely
+# Execute streaming queries
 with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
     LIVE_DATA = fetch_live_market_data()
 
@@ -82,7 +82,7 @@ panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 with panel_left:
     st.subheader("📂 Register Matrix")
     
-    categories = ["All", "Magnificent Seven", "SOXX Top Holdings", "Taiwan"]
+    categories = ["All", "Mag7", "SOXX", "Taiwan"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
     ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
@@ -122,7 +122,7 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    # Programmatic evaluation avoids raw text array parsing truncations completely
+    # Programmatic evaluation completely avoids code text loss traps
     years_list = list(range(2016, 2027))
     entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
     execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
@@ -192,6 +192,10 @@ if execute_backtest:
                 
                 total_terminal_value += final_v
                 perf_pct = (growth_factor - 1.0) * 100
+                
+                table_summary.append({
+                    "Asset Ticker": ticker,
+
 
 
 
