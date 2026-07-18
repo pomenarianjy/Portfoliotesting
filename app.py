@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 import datetime
 
 # Strict live data feed environment tracking engine
@@ -121,7 +122,6 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    # FIXED: Re-engineered to build list programmatically to guarantee zero open brackets [stem-calculative-problem-solving]
     years_list = list(range(2016, 2026))
     entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
     execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
@@ -151,7 +151,7 @@ with panel_right:
     else:
         st.write("Select an active asset to load data parameters.")
 
-# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH DYNAMIC DAY COUNTER
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH FIXED TABLE FORMATTING
 if execute_backtest:
     total_alloc = sum(st.session_state.portfolio_weights.values())
     if total_alloc != 100:
@@ -190,6 +190,11 @@ if execute_backtest:
                 final_v = allocated_base * growth_factor
                 
                 total_terminal_value += final_v
+                perf_pct = (growth_factor - 1.0) * 100
+                
+                table_summary.append({
+                    "Asset Ticker": ticker,
+
 
 
 
