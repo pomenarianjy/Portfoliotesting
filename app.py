@@ -14,7 +14,6 @@ except ModuleNotFoundError:
 st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
 
 # 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
-# Fully loaded with all requested securities across US, Taiwan, Japan, and South Korea markets.
 TICKERS_LIST = [
     # Magnificent Seven
     "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA",
@@ -54,26 +53,17 @@ CATEGORIES_LIST = [
     "South Korea", "South Korea"
 ]
 
-# Mapping to keep rendering outputs clean for non-USD assets
 CURRENCY_MAP = {
-    "Mag7": "USD",
-    "SOXX": "USD",
-    "Taiwan": "TWD", # TSM and ASX map to local currencies if fetched via TWSE, native tickers used here return local currency unless NYSE dual-listed.
-    "Japan": "JPY",
-    "South Korea": "KRW"
+    "Mag7": "USD", "SOXX": "USD", "Taiwan": "TWD", "Japan": "JPY", "South Korea": "KRW"
 }
-
-# Override currency for specific dual-listed ADRs in the list
-for idx, ticker in enumerate(TICKERS_LIST):
-    if ticker in ["TSM", "UMC", "ASX"]:
-        CURRENCY_MAP[ticker] = "USD"
+for t in ["TSM", "UMC", "ASX"]:
+    CURRENCY_MAP[t] = "USD"
 
 # Caching engine to isolate download loops from component click events
 @st.cache_data(ttl=3600)
 def load_live_market_data():
     enriched_data = []
     for idx, ticker in enumerate(TICKERS_LIST):
-        # Establish structural fallbacks to protect equation parameters from missing API variables
         last_price = 150.0
         ann_10y = 0.22
         vol = 0.32
@@ -106,16 +96,16 @@ def load_live_market_data():
         })
     return enriched_data
 
-# Execute streaming queries Safely
 with st.spinner("Streaming live price quotes directly from global Market terminals..."):
     LIVE_DATA = load_live_market_data()
 
-# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
+# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE (FIXED)
+# Seed the weights directly from the immutable TICKERS_LIST so a KeyError is mathematically impossible
 if "focused_key" not in st.session_state:
-    st.session_state.focused_key = "NVDA"
+    st.session_state.focused_key = TICKERS_LIST[0]
 
 if "portfolio_weights" not in st.session_state:
-    st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in LIVE_DATA}
+    st.session_state.portfolio_weights = {str(tk): 0 for tk in TICKERS_LIST}
 
 def select_focused_asset(ticker):
     st.session_state.focused_key = ticker
@@ -127,7 +117,6 @@ panel_left, panel_right = st.columns([1.4, 0.9], gap="large")
 with panel_left:
     st.subheader("📂 Register Matrix")
     
-    # Dynamically generated unique categories for filtering
     categories = ["All"] + sorted(list(set(CATEGORIES_LIST)))
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
@@ -145,14 +134,15 @@ with panel_left:
         ticker = str(item["ticker"])
         name = str(item["name"])
         
-        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_live_{ticker}_{idx}", label_visibility="collapsed")
+        # Safe access verification
+        current_weight = st.session_state.portfolio_weights.get(ticker, 0)
+        is_checked = r1.checkbox("", value=(current_weight > 0), key=f"cb_live_{ticker}_{idx}", label_visibility="collapsed")
         
-        # Display cleaner labels for presentation while keeping real backend ticker mechanics
         display_ticker = ticker.split(".")[0]
         r2.button(f"🔗 {display_ticker} | {name[:22]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
             
         if is_checked:
-            old_val = st.session_state.portfolio_weights[ticker]
+            old_val = st.session_state.portfolio_weights.get(ticker, 0)
             initial_val = int(old_val) if old_val > 0 else 0
             new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_live_{ticker}_{idx}", label_visibility="collapsed")
             st.session_state.portfolio_weights[ticker] = new_alloc
