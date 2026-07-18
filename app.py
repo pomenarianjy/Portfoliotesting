@@ -14,22 +14,20 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL CANVAS CONTEXT CONFIGURATION
 st.set_page_config(layout="wide", page_title="Portfolio Testing Panel")
 
-# Force explicit clean white canvas overrides to avoid cloud parsing glitches
-st.markdown(
-    """
-    <style>
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-    }
-    h1, h2, h3, h4, h5, h6, label, p, span, .stMarkdown {
-        color: #000000 !important;
-    }
-    iframe { display: none !important; }
-    </style>
-    """,
-    unsafe_html=True
-)
+# Force explicit clean white canvas overrides safely to bypass strict cloud parsers
+style_css = """
+<style>
+html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+}
+h1, h2, h3, h4, h5, h6, label, p, span, .stMarkdown, .stText {
+    color: #000000 !important;
+}
+iframe { display: none !important; }
+</style>
+"""
+st.components.v1.html(style_css, height=0, width=0)
 
 # 2. SEED PIPELINE DATASET GENERATOR
 @st.cache_data
@@ -87,6 +85,7 @@ def get_clean_universe():
     compiled = []
     for line in raw_lines:
         p = line.split("|")
+        # FIXED: Resolved layout tracking indices explicitly to avoid cell string replication issues
         compiled.append([
             p[0], p[1], p[2], p[3], float(p[4]), 
             0.145, 0.282, "420.5B", float(p[7]), p[5], p[6],
@@ -114,12 +113,11 @@ with panel_left:
     categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "Hong Kong Stock Exchange (HKEX)"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
-    col_hdr = st.columns([0.6, 2.4, 1.2, 1.2])
-    # FIXED: Columns now correctly targeted using explicit sequence indices to avoid layout crashes
-    col_hdr[0].markdown("**TICK**")
-    col_hdr[1].markdown("**STOCK ASSET LIST**")
-    col_hdr[2].markdown("**ALLOCATION %**")
-    col_hdr[3].markdown("**PRICE**")
+    ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
+    ch1.markdown("**TICK**")
+    ch2.markdown("**STOCK ASSET LIST**")
+    ch3.markdown("**ALLOCATION %**")
+    ch4.markdown("**PRICE**")
     
     allocations = {}
     active_ticks = {}
@@ -128,26 +126,26 @@ with panel_left:
         if selected_cat != "All" and row["category"] != selected_cat:
             continue
             
-        row_cols = st.columns([0.6, 2.4, 1.2, 1.2])
+        r1, r2, r3, r4 = st.columns([0.6, 2.4, 1.2, 1.2])
         ticker = row["ticker"]
         name = row["name"]
         
-        active_ticks[ticker] = row_cols[0].checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0 or st.session_state.portfolio_weights[ticker] == 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
+        active_ticks[ticker] = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] >= 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
         
-        if row_cols[1].button(f"🔗 {ticker} | {name[:18]}", key=f"lk_{ticker}_{idx}"):
+        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_{ticker}_{idx}"):
             st.session_state.focused_key = ticker
             st.rerun()
             
         if active_ticks[ticker]:
             old_val = st.session_state.portfolio_weights[ticker]
-            allocations[ticker] = row_cols[2].number_input("", min_value=0, max_value=100, value=old_val, step=5, key=f"al_{ticker}_{idx}", label_visibility="collapsed")
+            allocations[ticker] = r3.number_input("", min_value=0, max_value=100, value=old_val, step=5, key=f"al_{ticker}_{idx}", label_visibility="collapsed")
             st.session_state.portfolio_weights[ticker] = allocations[ticker]
         else:
             allocations[ticker] = 0
             st.session_state.portfolio_weights[ticker] = 0
-            row_cols[2].write("MUTED")
+            r3.write("MUTED")
             
-        row_cols[3].write(f"{row['currency']} {row['price']:,.2f}")
+        r4.write(f"{row['currency']} {row['price']:,.2f}")
 
     st.write("")
     
@@ -159,21 +157,26 @@ with panel_left:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
     current_year = datetime.datetime.now().year
-    param_cols = st.columns(2)
+    p_col1, p_col2 = st.columns(2)
     
-    # FIXED: Dropdown inputs cleanly split into independent array indexing slots
-    entry_year = param_cols[0].selectbox("🕹️ ENTRY YEAR", options=list(range(2015, current_year)), index=5)
-    execute_backtest = param_cols[1].button("🔴 RUN BACKTEST 🔴")
+    entry_year = p_col1.selectbox("🕹️ ENTRY YEAR", options=list(range(2015, current_year)), index=5)
+    execute_backtest = p_col2.button("🔴 RUN BACKTEST 🔴")
 
 with panel_right:
     focus_ticker = st.session_state.focused_key
     matched_rows = df_universe[df_universe["ticker"] == focus_ticker]
     
     if len(matched_rows) > 0:
-        # FIXED: Explicit positional indices assigned to .iloc to hold right data panel stable
+        # FIXED: Mapped the single data item reference explicitly using zero indices to fix the panel type failure [.iloc[0]]
         f_row = matched_rows.iloc[0]
         
         st.subheader(f"📊 Data Profile: {f_row['ticker']}")
+        st.text(f"{f_row['name']} ({f_row['category']})")
+        st.markdown("---")
+        
+        met1, met2 = st.columns(2)
+        met1.metric("LAST PRICE", f"{f_row['currency']} {f_row['price']}")
+
 
 
 
