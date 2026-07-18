@@ -64,7 +64,7 @@ universe = get_universe_data()
 
 # Lock state defaults cleanly to prevent list indexing mapping failures
 if "focused_stock" not in st.session_state:
-    st.session_state.focused_stock = list(universe.keys())[0]
+    st.session_state.focused_stock = "NVIDIA (NVDA)"
 
 st.title("PORTFOLIO TESTING")
 st.caption("A SINGLE FAMILY OFFICE FRONT PAGE PANEL")
@@ -75,29 +75,31 @@ panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 with panel_left:
     st.markdown("### 🕹️ TICKETING MATRIX REGISTER")
     header_cols = st.columns([0.6, 2.2, 1.2, 1.2])
-    header_cols.markdown("**TICK**")
-    header_cols.markdown("**STOCK (ENG / TICKER)**")
-    header_cols.markdown("**ALLOCATION %**")
-    header_cols.markdown("**LAST PRICE**")
+    
+    # FIXED: Index assignments mapped directly to handle column headers without crashing
+    header_cols[0].markdown("**TICK**")
+    header_cols[1].markdown("**STOCK (ENG / TICKER)**")
+    header_cols[2].markdown("**ALLOCATION %**")
+    header_cols[3].markdown("**LAST PRICE**")
     
     allocations = {}
     active_ticks = {}
     
     for idx, (key, data) in enumerate(universe.items()):
         row_cols = st.columns([0.6, 2.2, 1.2, 1.2])
-        active_ticks[key] = row_cols.checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
+        active_ticks[key] = row_cols[0].checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
         
-        if row_cols.button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
+        if row_cols[1].button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
             st.session_state.focused_stock = key
             st.rerun()
             
         if active_ticks[key]:
-            allocations[key] = row_cols.number_input("", min_value=0, max_value=100, value=20, step=5, key=f"al_{idx}", label_visibility="collapsed")
+            allocations[key] = row_cols[2].number_input("", min_value=0, max_value=100, value=20, step=5, key=f"al_{idx}", label_visibility="collapsed")
         else:
             allocations[key] = 0
-            row_cols.markdown("<span style='color:#8C8C8C;'>MUTED</span>", unsafe_html=True)
+            row_cols[2].markdown("<span style='color:#8C8C8C;'>MUTED</span>", unsafe_html=True)
             
-        row_cols.write(f"{data['currency']} {data['price']:,.2f}")
+        row_cols[3].write(f"{data['currency']} {data['price']:,.2f}")
     
     st.markdown("<br>", unsafe_html=True)
     current_year = datetime.datetime.now().year
@@ -124,7 +126,6 @@ with panel_right:
     st.markdown("---")
     st.markdown("**FABRICATION NODE ENGINE DATA**")
     
-    # Safe decoupled display blocks that bypass strict python string literal filters
     st.write(f"- **Revenue Trend:** QoQ: **{f_data['qoq_rev']*100:+.1f}%** | YoY: **{f_data['yoy_rev']*100:+.1f}%**")
     st.write(f"- **Gross Profit Margin:** **{f_data['gross_margin']*100:.1f}%** (Pricing power scale factor)")
     st.write(f"- **Operating Margin:** **{f_data['op_margin']*100:.1f}%** (Structural overhead leverage)")
@@ -157,7 +158,7 @@ if execute_backtest:
             months_total = 12
             
         timeline = np.linspace(entry_year, current_year, months_total)
-        portfolio_curve = np.zeros_like(timeline) + 100.0
+        portfolio_curve = np.zeros_like(timeline)
         table_summary = []
         ind_weights = {}
         geo_weights = {}
@@ -172,7 +173,7 @@ if execute_backtest:
             geo_weights[geo] = geo_weights.get(geo, 0) + weight
             
             asset_curve = 100.0 * np.exp((r - 0.5 * (v**2)) * (timeline - entry_year))
-            portfolio_curve += (weight / 100.0) * (asset_curve - 100.0)
+            portfolio_curve += (weight / 100.0) * asset_curve
             final_v = 100000 * (asset_curve[-1] / 100.0)
             
             table_summary.append({
@@ -188,6 +189,8 @@ if execute_backtest:
         fig_main.update_layout(plot_bgcolor=NES_BLACK, paper_bgcolor='#FFFFFF', font=dict(family="Share Tech Mono", color=NES_BLACK), xaxis=dict(gridcolor="#333333", showgrid=True), yaxis=dict(gridcolor="#333333", showgrid=True))
         fig_main.update_traces(line_color=NES_GREEN, line_width=4)
         st.plotly_chart(fig_main, use_container_width=True)
+        
+
         
 
 
