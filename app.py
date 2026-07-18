@@ -11,12 +11,62 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
+st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
 
 # 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
-TICKERS_LIST = ["NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AMD", "MU", "AVGO", "AMAT", "TSM", "UMC"]
-NAMES_LIST = ["Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com", "Meta Platforms", "Tesla Inc.", "Advanced AMD", "Micron Tech", "Broadcom Inc.", "Applied Materials", "TSMC", "UMC"]
-CATEGORIES_LIST = ["Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "SOXX", "SOXX", "SOXX", "SOXX", "Taiwan", "Taiwan"]
+# Fully loaded with all requested securities across US, Taiwan, Japan, and South Korea markets.
+TICKERS_LIST = [
+    # Magnificent Seven
+    "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA",
+    # SOXX Top 15 Holdings
+    "AMD", "MU", "AVGO", "AMAT", "INTC", "KLAC", "LRCX", "TXN", "MRVL", "QCOM", "MPWR", "NXPI", "ADI",
+    # Taiwan
+    "TSM", "UMC", "5347.TWO", "2454.TW", "3034.TW", "2379.TW", "3661.TW", "ASX",
+    # Japan
+    "8035.T", "6857.T", "6146.T", "6920.T", "7735.T", "6525.T", "285A.T", "6723.T", "4062.T", "6963.T",
+    # South Korea
+    "005930.KS", "000660.KS"
+]
+
+NAMES_LIST = [
+    # Magnificent Seven
+    "Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com Inc.", "Meta Platforms Inc.", "Tesla Inc.",
+    # SOXX Top 15 Holdings
+    "Advanced Micro Devices, Inc.", "Micron Technology, Inc.", "Broadcom Inc.", "Applied Materials, Inc.", "Intel Corporation", "KLA Corporation", "Lam Research Corp.", "Texas Instruments Inc.", "Marvell Technology, Inc.", "Qualcomm Inc.", "Monolithic Power Systems, Inc.", "NXP Semiconductors N.V.", "Analog Devices, Inc.",
+    # Taiwan
+    "TSMC", "UMC", "Vanguard International", "MediaTek", "Novatek Microelectronics", "Realtek Semiconductor", "Alchip Technologies", "ASE Technology Holding",
+    # Japan
+    "Tokyo Electron", "Advantest Corp.", "Disco Corp.", "Lasertec Corp.", "SCREEN Holdings", "Kokusai Electric", "Kioxia Holdings", "Renesas Electronics", "Ibiden Co.", "ROHM Co.",
+    # South Korea
+    "Samsung Electronics", "SK Hynix"
+]
+
+CATEGORIES_LIST = [
+    # Magnificent Seven
+    "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7",
+    # SOXX Top 15 Holdings
+    "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX",
+    # Taiwan
+    "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan",
+    # Japan
+    "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan",
+    # South Korea
+    "South Korea", "South Korea"
+]
+
+# Mapping to keep rendering outputs clean for non-USD assets
+CURRENCY_MAP = {
+    "Mag7": "USD",
+    "SOXX": "USD",
+    "Taiwan": "TWD", # TSM and ASX map to local currencies if fetched via TWSE, native tickers used here return local currency unless NYSE dual-listed.
+    "Japan": "JPY",
+    "South Korea": "KRW"
+}
+
+# Override currency for specific dual-listed ADRs in the list
+for idx, ticker in enumerate(TICKERS_LIST):
+    if ticker in ["TSM", "UMC", "ASX"]:
+        CURRENCY_MAP[ticker] = "USD"
 
 # Caching engine to isolate download loops from component click events
 @st.cache_data(ttl=3600)
@@ -27,6 +77,9 @@ def load_live_market_data():
         last_price = 150.0
         ann_10y = 0.22
         vol = 0.32
+        
+        category = CATEGORIES_LIST[idx]
+        currency = CURRENCY_MAP.get(ticker, CURRENCY_MAP.get(category, "USD"))
         
         try:
             ticker_obj = yf.Ticker(ticker)
@@ -45,16 +98,16 @@ def load_live_market_data():
         enriched_data.append({
             "ticker": ticker,
             "name": NAMES_LIST[idx],
-            "category": CATEGORIES_LIST[idx],
+            "category": category,
             "price": last_price,
             "ann_10y": ann_10y,
             "vol": vol,
-            "currency": "USD"
+            "currency": currency
         })
     return enriched_data
 
 # Execute streaming queries Safely
-with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
+with st.spinner("Streaming live price quotes directly from global Market terminals..."):
     LIVE_DATA = load_live_market_data()
 
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
@@ -67,14 +120,15 @@ if "portfolio_weights" not in st.session_state:
 def select_focused_asset(ticker):
     st.session_state.focused_key = ticker
 
-st.title("📊 LIVE PORTFOLIO TESTING PANEL")
+st.title("📊 GLOBAL PORTFOLIO TESTING PANEL")
 
-panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
+panel_left, panel_right = st.columns([1.4, 0.9], gap="large")
 
 with panel_left:
     st.subheader("📂 Register Matrix")
     
-    categories = ["All", "Mag7", "SOXX", "Taiwan"]
+    # Dynamically generated unique categories for filtering
+    categories = ["All"] + sorted(list(set(CATEGORIES_LIST)))
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
     ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
@@ -93,7 +147,9 @@ with panel_left:
         
         is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_live_{ticker}_{idx}", label_visibility="collapsed")
         
-        r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
+        # Display cleaner labels for presentation while keeping real backend ticker mechanics
+        display_ticker = ticker.split(".")[0]
+        r2.button(f"🔗 {display_ticker} | {name[:22]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
             
         if is_checked:
             old_val = st.session_state.portfolio_weights[ticker]
@@ -104,7 +160,7 @@ with panel_left:
             st.session_state.portfolio_weights[ticker] = 0
             r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
             
-        r4.write(f"USD {item['price']:,.2f}")
+        r4.write(f"{item['currency']} {item['price']:,.2f}")
 
     st.write("")
     
@@ -128,12 +184,13 @@ with panel_right:
             break
             
     if target_record is not None:
-        st.subheader(f"📊 Live Data Profile: {target_record['ticker']}")
+        clean_focus_display = target_record['ticker'].split(".")[0]
+        st.subheader(f"📊 Live Data Profile: {clean_focus_display}")
         st.text(f"{target_record['name']} ({target_record['category']})")
         st.markdown("---")
         
         met1, met2 = st.columns(2)
-        met1.metric("LAST CLOSE PRICE", f"USD {target_record['price']:,.2f}")
+        met1.metric("LAST CLOSE PRICE", f"{target_record['currency']} {target_record['price']:,.2f}")
         met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
     else:
         st.write("Select an active asset to load data parameters.")
@@ -153,7 +210,8 @@ if execute_backtest:
         
         st.subheader(f"🎯 Backtest Performance Simulation Results (As of {end_date.strftime('%B %d, %Y')})")
         st.caption(f"Simulation tracked over exactly **{days_elapsed:,} days** ({years_elapsed:.3f} compounding fractional years).")
-        
+        st.info("ℹ️ Note: Portfolio baseline uses local currency performance normalized to a base model scale of $100,000 principal values.")
+
         table_summary = []
         total_initial_principal = 100000.0
         total_terminal_value = 0.0
@@ -180,7 +238,7 @@ if execute_backtest:
                 perf_pct = (growth_factor - 1.0) * 100
                 
                 table_summary.append({
-                    "Asset Ticker": ticker,
+                    "Asset Ticker": ticker.split(".")[0],
                     "Allocation Weight": f"{weight}%",
                     "Principal Base": f"${allocated_base:,.2f}",
                     "Terminal Value": f"${final_v:,.2f}",
