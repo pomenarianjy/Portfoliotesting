@@ -100,16 +100,16 @@ def load_live_market_data():
         enriched_data.append(enriched_item)
     return enriched_data
 
-with st.spinner("Streaming live price quotes directly from global tech terminals..."):
+with St.spinner("Streaming live price quotes directly from global tech terminals..."):
     LIVE_DATA = load_live_market_data()
 
-# 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
+# 3. FIXED ARCHITECTURE STATE MANAGEMENT
 if "df_portfolio" not in st.session_state:
     base_df = pd.DataFrame(LIVE_DATA)
     base_df.insert(0, "SELECT", False)
     base_df["ALLOCATION %"] = 0
-    # FIXED: Explicitly set string ticker as index to prevent index distortion during filtering loops
-    base_df.set_index("ticker", inplace=False)
+    # Use explicit text tickers directly as the DataFrame data layout index
+    base_df.set_index("ticker", inplace=True, drop=False)
     st.session_state.df_portfolio = base_df
 
 st.title("📊 JASMINE'S LIVE PORTFOLIO PANEL")
@@ -118,9 +118,8 @@ st.subheader("📂 Global Asset Ledger Matrix")
 categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
 selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
 
+# Filtered data framework views read directly from the indexed main dataframe
 if selected_cat == "All":
-    filtered_view = st.session_state.df_portfolio
+    filtered_view = st.session_state.df_portfolio.copy()
 else:
-    filtered_view = st.session_state.df_portfolio[st.session_state.df_portfolio["category"] == selected_cat]
 
-col_btn1, col_btn2 = st.columns(2)
