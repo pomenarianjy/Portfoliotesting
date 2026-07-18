@@ -1,10 +1,16 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
-import plotly.express as px
 
-# 1. APP CONFIGURATION & THEMATIC HARDWARE COLOR MAP
+# Defensive package loading wrapper
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+except ModuleNotFoundError:
+    st.error("🔧 ENVIRONMENT ERROR: Please ensure 'plotly' is written inside your requirements.txt file.")
+    st.stop()
+
+# 1. STYLE CONFIGURATION & NES HARDWARE PALETTE
 st.set_page_config(layout="wide", page_title="Portfolio Testing", page_icon="🎮")
 
 NES_RED = "#E60012"
@@ -13,7 +19,6 @@ NES_GRAY = "#8C8C8C"
 NES_GREEN = "#38D038"
 NES_BG = "#F8F8F8"
 
-# High-density custom CSS layout adjustments
 st.markdown(f"""
 <style>
     @import url('https://googleapis.com');
@@ -26,7 +31,7 @@ st.markdown(f"""
     .retro-title {{
         font-family: 'Press Start 2P', cursive;
         color: {NES_RED};
-        font-size: 28px;
+        font-size: 26px;
         text-shadow: 2px 2px 0px {NES_GRAY};
         margin-bottom: 2px;
     }}
@@ -57,7 +62,6 @@ st.markdown(f"""
         font-size: 13px !important;
         padding: 12px 0px !important;
         width: 100%;
-        transition: none !important;
     }}
     .stButton>button:hover {{
         background-color: {NES_RED} !important;
@@ -65,7 +69,7 @@ st.markdown(f"""
 </style>
 """, unsafe_html=True)
 
-# 2. SEED INSTITUTIONAL DATASET
+# 2. FAMILY OFFICE SEMICONDUCTOR DATASET
 @st.cache_data
 def get_universe_data():
     return {
@@ -103,56 +107,49 @@ def get_universe_data():
 
 universe = get_universe_data()
 
-# Initialize active selection view track
 if "focused_stock" not in st.session_state:
     st.session_state.focused_stock = list(universe.keys())[0]
 
-# Header Row
+# Banner Elements
 st.markdown('<div class="retro-title">PORTFOLIO TESTING</div>', unsafe_html=True)
 st.markdown('<div class="retro-subtitle">A Single Family Office Front Page Panel</div>', unsafe_html=True)
 
-# 3. SIDE-BY-SIDE DOUBLE PANEL SPLIT
-panel_left, panel_right = st.columns([3, 2], gap="large")
+# 3. SPLIT PANEL SYSTEM LAYOUT
+panel_left, panel_right = st.columns([1.2, 1.0], gap="large")
 
 with panel_left:
-    st.markdown('<div class="retro-card"><strong>🕹️ POSITION TRACKING MATRIX</strong></div>', unsafe_html=True)
+    st.markdown('<div class="retro-card"><strong>🕹️ TICKETING MATRIX REGISTER</strong></div>', unsafe_html=True)
     
-    # Clean tabular entry header alignment
     header_cols = st.columns([0.6, 2.2, 1.2, 1.2])
-    header_cols[0].markdown("**TICK**")
-    header_cols[1].markdown("**STOCK (ENG / TICKER)**")
-    header_cols[2].markdown("**ALLOCATION %**")
-    header_cols[3].markdown("**LAST PRICE**")
+    header_cols.markdown("**TICK**")
+    header_cols.markdown("**STOCK (ENG / TICKER)**")
+    header_cols.markdown("**ALLOCATION %**")
+    header_cols.markdown("**LAST PRICE**")
     
     allocations = {}
     active_ticks = {}
     
-    # Dense data row builder
     for idx, (key, data) in enumerate(universe.items()):
         row_cols = st.columns([0.6, 2.2, 1.2, 1.2])
         
-        # Checkbox selection gating
-        active_ticks[key] = row_cols[0].checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
+        active_ticks[key] = row_cols.checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
         
-        # Interactive text navigation trigger
-        if row_cols[1].button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
+        if row_cols.button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
             st.session_state.focused_stock = key
             st.rerun()
             
-        # Allocation dynamic scaling input boxes
         if active_ticks[key]:
-            allocations[key] = row_cols[2].number_input("", min_value=0, max_value=100, value=0, step=5, key=f"al_{idx}", label_visibility="collapsed")
+            allocations[key] = row_cols.number_input("", min_value=0, max_value=100, value=20, step=5, key=f"al_{idx}", label_visibility="collapsed")
         else:
             allocations[key] = 0
-            row_cols[2].markdown("<span style='color:#8C8C8C;'>MUTED</span>", unsafe_html=True)
+            row_cols.markdown("<span style='color:#8C8C8C;'>MUTED</span>", unsafe_html=True)
             
-        row_cols[3].write(f"{data['currency']} {data['price']:,.2f}")
+        row_cols.write(f"{data['currency']} {data['price']:,.2f}")
     
     st.markdown("<br>", unsafe_html=True)
     
-    # Portfolio Controls
     param_col1, param_col2 = st.columns(2)
-    entry_year = param_col1.selectbox("🎮 RETRO ENTRY YEAR", options=[2016, 2018, 2020, 2022, 2024], index=2)
+    entry_year = param_col1.selectbox("🎮 RETRO ENTRY YEAR", options=[2016, 2018, 2020, 2022], index=2)
     
     st.markdown("<div style='padding-top: 10px;'></div>", unsafe_html=True)
     execute_backtest = st.button("🔴 DECIDED 🔴")
@@ -162,11 +159,10 @@ with panel_right:
     f_data = universe[focus_key]
     
     st.markdown(f'<div class="retro-card" style="border-color: {NES_RED};">', unsafe_html=True)
-    st.markdown(f"<h3 style='margin:0; color:{NES_BLACK};'>{f_data['ticker']} DATA BLOCKS</h3>", unsafe_html=True)
+    st.markdown(f"<h3 style='margin:0;'>{f_data['ticker']} DATA BLOCK</h3>", unsafe_html=True)
     st.caption(f_data['name'])
     st.markdown("<hr style='margin:10px 0; border:1px solid #000;'/>", unsafe_html=True)
     
-    # Primary price block display metrics
     m_col1, m_col2 = st.columns(2)
     m_col1.metric("LAST PRICE", f"{f_data['currency']} {f_data['price']}")
     m_col2.metric("MARKET CAP", f_data['mcap'])
@@ -176,22 +172,20 @@ with panel_right:
     m_col4.metric("10Y ANN. RETURN", f"{f_data['ann_10y']*100:.1f}%")
     
     st.markdown("<hr style='margin:10px 0; border:1px dashed #8C8C8C;'/>", unsafe_html=True)
-    st.markdown("**FABRICATION NODE ENGINE TELEMETRY**")
+    st.markdown("**FABRICATION NODE ENGINE DATA**")
     
-    # Clean bullet block list tracking deep semiconductor variables
     st.markdown(f"""
     * **Revenue Trend:** QoQ: **{f_data['qoq_rev']*100:+.1f}%** | YoY: **{f_data['yoy_rev']*100:+.1f}%**
-    * **Gross Profit Margin:** **{f_data['gross_margin']*100:.1f}%** (Pricing power scale factor)
-    * **Operating Margin:** **{f_data['op_margin']*100:.1f}%** (Structural overhead leverage)
-    * **Free Cash Flow:** **{f_data['currency']} {f_data['fcf']}** (Liquidity scale engine)
-    * **Capex Budget:** **{f_data['currency']} {f_data['capex']}** (Infrastructure expansion signal)
-    * **Yield Rate Efficiency:** **{f_data['yield_rate']*100:.1f}%** (Functional dies per silicon wafer)
+    * **Gross Profit Margin:** **{f_data['gross_margin']*100:.1f}%** (Advanced Node efficiency)
+    * **Operating Margin:** **{f_data['op_margin']*100:.1f}%** (R&D scaling leverage)
+    * **Free Cash Flow:** {f_data['currency']} **{f_data['fcf']}**
+    * **Capex Budget:** {f_data['currency']} **{f_data['capex']}**
+    * **Yield Rate Efficiency:** **{f_data['yield_rate']*100:.1f}%**
     """)
     
-    # Guardrail calculation context check
     util = f_data['utilization'] * 100
     util_color = "red" if util < 80 else "green"
-    st.markdown(f"**Wafer Fab Utilization:** :{util_color}[**{util:.1f}%**] (Drops below 80% severely crush margins)")
+    st.markdown(f"**Wafer Fab Utilization:** :{util_color}[**{util:.1f}%**] (Sub-80% drops crush margins)")
     
     # Clean programmatic structural chart lines
     np.random.seed(hash(focus_key) % 500)
@@ -202,19 +196,17 @@ with panel_right:
     
     st.markdown('</div>', unsafe_html=True)
 
-# 4. LOWER DATA BLOCKS: GRAPHICAL ENGINE SIMULATIONS
+# 4. GRAPH ENGINE SIMULATOR RUNNERS
 if execute_backtest:
     total_alloc = sum(allocations.values())
     
     if total_alloc != 100:
-        st.sidebar.error(f"⚠️ TARGET ERROR: Total allocations equal {total_alloc}%. Adjust weights to sum to exactly 100%.")
+        st.error(f"⚠️ ALLOCATION ERROR: Total weights equal {total_alloc}%. Rebalance entries to equal exactly 100%.")
     else:
-        st.markdown("<hr style='border:2px solid #000; margin:30px 0;'/>", unsafe_html=True)
-        st.success("🎯 MATRIX VALIDATED. GENERATING PORTFOLIO EXPOSURE MODELS...")
+        st.markdown("<hr style='border:2px solid #000; margin:25px 0;'/>", unsafe_html=True)
+        st.success("🎯 SIMULATION COMPLETE. PLOTTING VISUAL CHARTS LOWER ON PAGE.")
         
         filtered_positions = {k: v for k, v in allocations.items() if v > 0}
-        
-        # Math Run Model
         timeline = np.linspace(entry_year, 2026, int((2026 - entry_year) * 12))
         portfolio_curve = np.zeros_like(timeline) + 100.0
         table_summary = []
@@ -223,3 +215,16 @@ if execute_backtest:
             r = universe[asset]['ann_10y']
             v = universe[asset]['vol']
             
+            asset_curve = 100.0 * np.exp((r - 0.5 * v**2) * (timeline - entry_year))
+            portfolio_curve += (weight / 100.0) * (asset_curve - 100.0)
+            
+            final_v = 100000 * (asset_curve[-1] / 100.0)
+            table_summary.append({
+                "Asset": universe[asset]['ticker'],
+                "Weight": f"{weight}%",
+                "Principal": "$100,000",
+                "Value (2026)": f"${final_v:,.2f}",
+                "Growth": f"{(asset_curve[-1] - 100.0):+.1f}%"
+            })
+            
+
