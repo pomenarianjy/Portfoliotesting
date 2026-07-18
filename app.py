@@ -13,57 +13,49 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
 
-# 2. SEED METADATA MATRIX FOR LIVE FETCHING
-RAW_DATA = [
-    {"category": "Mag7", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "industry": "AI Compute / GPUs", "geo": "USA", "def_price": 135.50, "def_r": 0.452, "def_v": 0.44},
-    {"category": "Mag7", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "industry": "Enterprise Software / Cloud", "geo": "USA", "def_price": 420.10, "def_r": 0.245, "def_v": 0.22},
-    {"category": "Mag7", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "industry": "Consumer Hardware / Mobile", "geo": "USA", "def_price": 225.40, "def_r": 0.221, "def_v": 0.20},
-    {"category": "Mag7", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "industry": "Digital Advertising / AI", "geo": "USA", "def_price": 175.60, "def_r": 0.195, "def_v": 0.24},
-    {"category": "Mag7", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "def_price": 185.30, "def_r": 0.212, "def_v": 0.28},
-    {"category": "Mag7", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "industry": "Digital Advertising / Metaverse", "geo": "USA", "def_price": 495.20, "def_r": 0.228, "def_v": 0.36},
-    {"category": "Mag7", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "industry": "Automotive / Energy Storage", "geo": "USA", "def_price": 210.50, "def_r": 0.384, "def_v": 0.52},
-    {"category": "SOXX", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "industry": "AI Compute / CPUs", "geo": "USA", "def_price": 154.40, "def_r": 0.315, "def_v": 0.42},
-    {"category": "SOXX", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "industry": "Memory (HBM / DRAM)", "geo": "USA", "def_price": 94.50, "def_r": 0.198, "def_v": 0.49},
-    {"category": "SOXX", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "industry": "Networking / ASICs", "geo": "USA", "def_price": 164.80, "def_r": 0.294, "def_v": 0.27},
-    {"category": "SOXX", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "industry": "Wafer Fab Equipment", "geo": "USA", "def_price": 192.40, "def_r": 0.264, "def_v": 0.34},
-    {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_price": 178.20, "def_r": 0.261, "def_v": 0.33},
-    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "industry": "Pure-Play Foundry", "geo": "Taiwan", "def_price": 7.80, "def_r": 0.114, "def_v": 0.36}
-]
+# 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
+TICKERS_LIST = ["NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AMD", "MU", "AVGO", "AMAT", "TSM", "UMC"]
+NAMES_LIST = ["Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com", "Meta Platforms", "Tesla Inc.", "Advanced AMD", "Micron Tech", "Broadcom Inc.", "Applied Materials", "TSMC", "UMC"]
+CATEGORIES_LIST = ["Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "SOXX", "SOXX", "SOXX", "SOXX", "Taiwan", "Taiwan"]
 
-# Cache live pricing data to prevent API throttling on component click loops
+# Caching engine to isolate download loops from component click events
 @st.cache_data(ttl=3600)
-def fetch_live_market_data():
+def load_live_market_data():
     enriched_data = []
-    for item in RAW_DATA:
-        ticker_symbol = item["ticker"]
-        last_price = item["def_price"]
-        ann_10y = item["def_r"]
-        vol = item["def_v"]
+    for idx, ticker in enumerate(TICKERS_LIST):
+        # Establish structural fallbacks to protect equation parameters from missing API variables
+        last_price = 150.0
+        ann_10y = 0.22
+        vol = 0.32
         
         try:
-            ticker_obj = yf.Ticker(ticker_symbol)
+            ticker_obj = yf.Ticker(ticker)
             history = ticker_obj.history(period="5d")
-            
             if history is not None and not history.empty:
                 last_price = float(history['Close'].iloc[-1])
                 info = ticker_obj.info
                 if info is not None:
                     fetched_r = info.get('threeYearAverageReturn')
                     fetched_v = info.get('beta')
-                    
                     if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
                     if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
-            pass # Keep default fallbacks safely if Yahoo is down or throttling
+            pass
             
-        enriched_item = item.copy()
-        enriched_item.update({"price": last_price, "ann_10y": ann_10y, "vol": vol})
-        enriched_data.append(enriched_item)
+        enriched_data.append({
+            "ticker": ticker,
+            "name": NAMES_LIST[idx],
+            "category": CATEGORIES_LIST[idx],
+            "price": last_price,
+            "ann_10y": ann_10y,
+            "vol": vol,
+            "currency": "USD"
+        })
     return enriched_data
 
-# Execute streaming queries
+# Execute streaming queries Safely
 with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
-    LIVE_DATA = fetch_live_market_data()
+    LIVE_DATA = load_live_market_data()
 
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
 if "focused_key" not in st.session_state:
@@ -122,7 +114,6 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    # Programmatic evaluation completely avoids code text loss traps
     years_list = list(range(2016, 2027))
     entry_year = st.selectbox("🕹️ ENTRY YEAR (Starts Jan 1st)", options=years_list, index=4)
     execute_backtest = st.button("🔴 RUN LIVE BACKTEST 🔴", use_container_width=True)
@@ -144,11 +135,6 @@ with panel_right:
         met1, met2 = st.columns(2)
         met1.metric("LAST CLOSE PRICE", f"USD {target_record['price']:,.2f}")
         met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
-        
-        st.markdown("---")
-        st.subheader("🔬 Core Metadata Telemetry")
-        st.write(f"- **Primary Domain Sector:** {target_record['industry']}")
-        st.write(f"- **Geographic Processing Matrix:** {target_record['geo']}")
     else:
         st.write("Select an active asset to load data parameters.")
 
@@ -195,8 +181,28 @@ if execute_backtest:
                 
                 table_summary.append({
                     "Asset Ticker": ticker,
-
-
+                    "Allocation Weight": f"{weight}%",
+                    "Principal Base": f"${allocated_base:,.2f}",
+                    "Terminal Value": f"${final_v:,.2f}",
+                    "Absolute Performance": f"{perf_pct:+.1f}%"
+                })
+            
+        if table_summary:
+            portfolio_total_return_pct = ((total_terminal_value / total_initial_principal) - 1.0) * 100
+            portfolio_cagr_pct = ((total_terminal_value / total_initial_principal) ** (1.0 / years_elapsed) - 1.0) * 100 if years_elapsed > 0 else 0.0
+            portfolio_net_profit = total_terminal_value - total_initial_principal
+            
+            st.markdown("### 📈 Portfolio Summary Metrics")
+            m_agg1, m_agg2, m_agg3, m_agg4 = st.columns(4)
+            m_agg1.metric("TOTAL INITIAL PRINCIPAL", f"${total_initial_principal:,.2f}")
+            m_agg2.metric("PORTFOLIO TERMINAL VALUE", f"${total_terminal_value:,.2f}")
+            m_agg3.metric("TOTAL ACCUMULATED RETURN", f"{portfolio_total_return_pct:+.2f}%", f"${portfolio_net_profit:,.2f} Net Profit")
+            m_agg4.metric("PORTFOLIO SIMULATED CAGR", f"{portfolio_cagr_pct:.2f}%")
+            
+            st.markdown("### 📋 Position Historical Balances Ledger")
+            st.table(pd.DataFrame(table_summary))
+        else:
+            st.error("No active positions selected.")
 
 
 
