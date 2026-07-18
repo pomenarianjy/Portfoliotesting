@@ -71,7 +71,7 @@ def get_clean_universe():
         "Japan|Renesas Electronics (TYO: 6723)|6723.T|JPY|2450.00|0.064|0.154|34.1B|0.32|Analog Nodes / Embedded Chips|Japan|0.01|0.04|0.52|0.22|2.1B|0.8B|0.81|0.92",
         "Japan|Ibiden Co. (TYO: 4062)|4062.T|JPY|4800.00|-0.041|0.132|5.1B|0.33|Advanced Node OSAT packaging|Japan|0.02|0.06|0.24|0.10|0.3B|0.6B|0.82|0.98",
         "Japan|ROHM Co. (TYO: 6963)|6963.T|JPY|1850.00|-0.092|0.084|4.8B|0.29|Analog Nodes / Power Systems|Japan|0.01|0.02|0.35|0.09|0.2B|0.7B|0.78|0.93",
-        "South Korea|Samsung Electronics (KRX: 005930)|005930.KS|KRW|68500.00|0.054|0.112|362.0B|0.31|IDM Conglomerate|South Korea|0.07|0.28|0.36|0.14|4.8B|38.2B|0.83|0.79",
+        "South Korea|Samsung Electronics (KRX: 005930)|005930.KS|KRW|68500.00|0.054|0.112|362.0B|0.31|IDM Conglomerate|South Korea|0.07|0.28|0.36|0.14|4.8B|38.2B *|0.83|0.79",
         "South Korea|SK Hynix (KRX: 000660)|000660.KS|KRW|165000.00|0.284|0.214|94.2B|0.42|Memory (HBM / DRAM)|South Korea|0.18|0.84|0.41|0.24|2.4B|12.4B|0.88|0.75",
         "Europe|ASML Holding N.V.|ASML|EUR|820.10|0.089|0.225|322.0B|0.28|Lithography Equipment|Netherlands|0.03|0.11|0.50|0.31|6.8B|2.5B|0.88|0.98",
         "Europe|Infineon Technologies AG (DAX: IFX)|IFX|EUR|34.20|0.041|0.145|48.2B|0.33|Analog Nodes / Power Systems|Germany|0.01|0.05|0.43|0.22|1.8B|2.1B|0.79|0.93",
@@ -85,7 +85,7 @@ def get_clean_universe():
     compiled = []
     for line in raw_lines:
         parts = line.split("|")
-        # FIXED: Corrected code tracking block alignment inside text loop processor to completely fix the IndentationError
+        # Ensure trailing markers don't mutate or cut off data definitions
         compiled.append({
             "category": parts[0], "name": parts[1], "ticker": parts[2], "currency": parts[3], "price": float(parts[4]), 
             "ytd": float(parts[5]), "ann_10y": float(parts[6]), "mcap": parts[7], "vol": float(parts[8]), "industry": parts[9], "geo": parts[10],
@@ -93,6 +93,8 @@ def get_clean_universe():
             "fcf": parts[15], "capex": parts[16], "utilization": float(parts[17]), "yield_rate": float(parts[18])
         })
     return pd.DataFrame(compiled)
+
+df_universe = get_clean_universe()
 
 
 
