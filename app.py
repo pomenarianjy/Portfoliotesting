@@ -11,29 +11,7 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
-
-# FORCE WHITE BACKGROUND OVERRIDE MATRIX VIA RAW HTML CSS INJECTION
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #ffffff !important;
-        color: #111111 !important;
-    }
-    .main .block-container {
-        background-color: #ffffff !important;
-    }
-    h1, h2, h3, h4, h5, h6, p, span, label {
-        color: #111111 !important;
-    }
-    .muted-text {
-        color: #777777 !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.set_page_config(layout="wide", page_title="Live Global Foundry Core Panel")
 
 # 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
 TICKERS_LIST = ["NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AMD", "MU", "AVGO", "AMAT", "TSM", "UMC"]
@@ -106,7 +84,6 @@ def trigger_equal_weight_normalization():
             else:
                 st.session_state.portfolio_weights[t] = 0
                 
-        # Proproportional distribution framework allocates remainder units cleanly
         for i in range(remainder):
             st.session_state.portfolio_weights[active_tickers[i]] += 1
     else:
@@ -123,7 +100,7 @@ with panel_left:
     categories = ["All", "Mag7", "SOXX", "Taiwan"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
-    # 🎛️ NEW: EQUAL WEIGHT MACRO TRIGGER BUTTON
+    # EQUAL WEIGHT NORMALIZATION TRIGGER BUTTON RESTORED
     st.button(
         "🎚️ DISTRIBUTE EQUAL WEIGHTS (CHECKED ONLY)", 
         on_click=trigger_equal_weight_normalization, 
@@ -145,25 +122,24 @@ with panel_left:
         ticker = str(item["ticker"])
         name = str(item["name"])
         
-        # Isolated checkbox configurations linked to clean dynamic macro tracks
         is_checked = r1.checkbox(
             "", 
             value=st.session_state.checked_tickers[ticker], 
-            key=f"cb_v19_{ticker}_{idx}", 
+            key=f"cb_live_{ticker}_{idx}", 
             label_visibility="collapsed"
         )
         st.session_state.checked_tickers[ticker] = is_checked
         
-        r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_v19_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
+        r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_live_{ticker}_{idx}", on_click=select_focused_asset, args=(ticker,))
             
         if is_checked:
             old_val = st.session_state.portfolio_weights[ticker]
             initial_val = int(old_val) if old_val > 0 else 0
-            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_v19_{ticker}_{idx}", label_visibility="collapsed")
+            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_live_{ticker}_{idx}", label_visibility="collapsed")
             st.session_state.portfolio_weights[ticker] = new_alloc
         else:
             st.session_state.portfolio_weights[ticker] = 0
-            r3.markdown("<span class='muted-text'>MUTED</span>", unsafe_allow_html=True)
+            r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
             
         r4.write(f"USD {item['price']:,.2f}")
 
@@ -250,3 +226,13 @@ if execute_backtest:
             
         if table_summary:
             portfolio_total_return_pct = ((total_terminal_value / total_initial_principal) - 1.0) * 100
+            portfolio_cagr_pct = ((total_terminal_value / total_initial_principal) ** (1.0 / years_elapsed) - 1.0) * 100 if years_elapsed > 0 else 0.0
+            portfolio_net_profit = total_terminal_value - total_initial_principal
+            
+            st.markdown("### 📈 Portfolio Summary Metrics")
+            m_agg1, m_agg2, m_agg3, m_agg4 = st.columns(4)
+            m_agg1.metric("TOTAL INITIAL PRINCIPAL", f"${total_initial_principal:,.2f}")
+            m_agg2.metric("PORTFOLIO TERMINAL VALUE", f"${total_terminal_value:,.2f}")
+            m_agg3.metric("TOTAL ACCUMULATED RETURN", f"{portfolio_total_return_pct:+.2f}%", f"${portfolio_net_profit:,.2f} Net Profit")
+            m_agg4.metric("PORTFOLIO SIMULATED CAGR", f"{portfolio_cagr_pct:.2f}%")
+
