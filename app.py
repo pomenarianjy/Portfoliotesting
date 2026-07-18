@@ -20,17 +20,8 @@ NES_GRAY = "#8C8C8C"
 NES_GREEN = "#38D038"
 NES_BG = "#F8F8F8"
 
-# FIXED: Injecting style blocks via separate html components to satisfy strict Python 3.14 runtime checks
-style_html = (
-    "<style>"
-    "@import url('https://googleapis.com');"
-    "html, body, [data-testid='stAppViewContainer'] { background-color: #F8F8F8; color: #000000; font-family: 'Share Tech Mono', monospace; }"
-    ".retro-title { font-family: 'Press Start 2P', cursive; color: #E60012; font-size: 26px; text-shadow: 2px 2px 0px #8C8C8C; margin-bottom: 2px; }"
-    ".retro-subtitle { font-family: 'Share Tech Mono', monospace; color: #000000; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #E60012; padding-bottom: 6px; margin-bottom: 20px; }"
-    ".retro-card { background-color: #FFFFFF; border: 3px solid #000000; box-shadow: 4px 4px 0px #8C8C8C; padding: 16px; margin-bottom: 16px; border-radius: 4px; }"
-    "iframe { display: none; }" # Hide empty visual spaces from layout engines
-    "</style>"
-)
+# Inject style parameters safely via flat string variables to bypass line parsing glitches
+style_html = "<style>@import url('https://googleapis.com'); html, body, [data-testid='stAppViewContainer'] { background-color: #F8F8F8; color: #000000; font-family: 'Share Tech Mono', monospace; } .retro-title { font-family: 'Press Start 2P', cursive; color: #E60012; font-size: 26px; text-shadow: 2px 2px 0px #8C8C8C; margin-bottom: 2px; } .retro-subtitle { font-family: 'Share Tech Mono', monospace; color: #000000; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #E60012; padding-bottom: 6px; margin-bottom: 20px; } iframe { display: none; }</style>"
 st.components.v1.html(style_html, height=0, width=0)
 
 # 2. HIGH-DENSITY CHIP EQUIPMENT & DESIGNS REGISTER DATA
@@ -71,10 +62,10 @@ def get_universe_data():
 
 universe = get_universe_data()
 
+# Lock state defaults cleanly to prevent list indexing mapping failures
 if "focused_stock" not in st.session_state:
-    st.session_state.focused_stock = list(universe.keys())
+    st.session_state.focused_stock = list(universe.keys())[0]
 
-# Headers - safely using native markdown tags to avoid parsing glitches
 st.title("PORTFOLIO TESTING")
 st.caption("A SINGLE FAMILY OFFICE FRONT PAGE PANEL")
 
@@ -83,7 +74,6 @@ panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 
 with panel_left:
     st.markdown("### 🕹️ TICKETING MATRIX REGISTER")
-    
     header_cols = st.columns([0.6, 2.2, 1.2, 1.2])
     header_cols.markdown("**TICK**")
     header_cols.markdown("**STOCK (ENG / TICKER)**")
@@ -95,7 +85,6 @@ with panel_left:
     
     for idx, (key, data) in enumerate(universe.items()):
         row_cols = st.columns([0.6, 2.2, 1.2, 1.2])
-        
         active_ticks[key] = row_cols.checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
         
         if row_cols.button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
@@ -111,11 +100,9 @@ with panel_left:
         row_cols.write(f"{data['currency']} {data['price']:,.2f}")
     
     st.markdown("<br>", unsafe_html=True)
-    
     current_year = datetime.datetime.now().year
     param_col1, param_col2 = st.columns(2)
     entry_year = param_col1.selectbox("🎮 RETRO ENTRY YEAR", options=list(range(2015, current_year)), index=5)
-    
     st.markdown("<div style='padding-top: 10px;'></div>", unsafe_html=True)
     execute_backtest = st.button("🔴 DECIDED 🔴")
 
@@ -137,15 +124,13 @@ with panel_right:
     st.markdown("---")
     st.markdown("**FABRICATION NODE ENGINE DATA**")
     
-    node_text = (
-        "* **Revenue Trend:** QoQ: **" + f"{f_data['qoq_rev']*100:+.1f}%" + "** | YoY: **" + f"{f_data['yoy_rev']*100:+.1f}%" + "**\n"
-        "* **Gross Profit Margin:** **" + f"{f_data['gross_margin']*100:.1f}%" + "** (Advanced Node efficiency)\n"
-        "* **Operating Margin:** **" + f"{f_data['op_margin']*100:.1f}%" + "** (R&D scaling leverage)\n"
-        "* **Free Cash Flow:** " + str(f_data['currency']) + " **" + str(f_data['fcf']) + "**\n"
-        "* **Capex Budget:** " + str(f_data['currency']) + " **" + str(f_data['capex']) + "**\n"
-        "* **Yield Rate Efficiency:** **" + f"{f_data['yield_rate']*100:.1f}%" + "**"
-    )
-    st.markdown(node_text)
+    # Safe decoupled display blocks that bypass strict python string literal filters
+    st.write(f"- **Revenue Trend:** QoQ: **{f_data['qoq_rev']*100:+.1f}%** | YoY: **{f_data['yoy_rev']*100:+.1f}%**")
+    st.write(f"- **Gross Profit Margin:** **{f_data['gross_margin']*100:.1f}%** (Pricing power scale factor)")
+    st.write(f"- **Operating Margin:** **{f_data['op_margin']*100:.1f}%** (Structural overhead leverage)")
+    st.write(f"- **Free Cash Flow:** {f_data['currency']} **{f_data['fcf']}**")
+    st.write(f"- **Capex Budget:** {f_data['currency']} **{f_data['capex']}**")
+    st.write(f"- **Yield Rate Efficiency:** **{f_data['yield_rate']*100:.1f}%**")
     
     util = f_data['utilization'] * 100
     util_color = "red" if util < 80 else "green"
@@ -160,13 +145,11 @@ with panel_right:
 # 4. BACKTEST RUNTIME CALCULATION MATRIX
 if execute_backtest:
     total_alloc = sum(allocations.values())
-    
     if total_alloc != 100:
         st.error(f"⚠️ ALLOCATION ERROR: Total weights equal {total_alloc}%. Rebalance values to hit exactly 100%.")
     else:
         st.markdown("---")
         st.success("🎯 MATRIX COMPILATION INGESTION COMPLETED.")
-        
         filtered_positions = {k: v for k, v in allocations.items() if v > 0}
         
         months_total = int((current_year - entry_year) * 12)
@@ -176,22 +159,22 @@ if execute_backtest:
         timeline = np.linspace(entry_year, current_year, months_total)
         portfolio_curve = np.zeros_like(timeline) + 100.0
         table_summary = []
-        
         ind_weights = {}
         geo_weights = {}
         
         for asset, weight in filtered_positions.items():
             r = universe[asset]['ann_10y']
             v = universe[asset]['vol']
-            
             ind = universe[asset]['industry']
             geo = universe[asset]['geo']
+            
             ind_weights[ind] = ind_weights.get(ind, 0) + weight
             geo_weights[geo] = geo_weights.get(geo, 0) + weight
             
             asset_curve = 100.0 * np.exp((r - 0.5 * (v**2)) * (timeline - entry_year))
             portfolio_curve += (weight / 100.0) * (asset_curve - 100.0)
             final_v = 100000 * (asset_curve[-1] / 100.0)
+            
             table_summary.append({
                 "Asset": universe[asset]['ticker'],
                 "Allocation Mix": f"{weight}%",
@@ -201,9 +184,12 @@ if execute_backtest:
             })
             
         chart_df = pd.DataFrame({"Timeline Year": timeline, "Portfolio Value ($)": portfolio_curve * 1000})
-        
         fig_main = px.line(chart_df, x="Timeline Year", y="Portfolio Value ($)", title=f"PORTFOLIO PERFORMANCE HISTORICAL PATHWAY (GROWTH BASE TO {current_year})")
-        fig_main.update_layout(
+        fig_main.update_layout(plot_bgcolor=NES_BLACK, paper_bgcolor='#FFFFFF', font=dict(family="Share Tech Mono", color=NES_BLACK), xaxis=dict(gridcolor="#333333", showgrid=True), yaxis=dict(gridcolor="#333333", showgrid=True))
+        fig_main.update_traces(line_color=NES_GREEN, line_width=4)
+        st.plotly_chart(fig_main, use_container_width=True)
+        
+
 
             
 
