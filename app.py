@@ -29,7 +29,7 @@ iframe { display: none !important; }
 """
 st.components.v1.html(style_css, height=0, width=0)
 
-# 2. SEED PIPELINE DATASET GENERATOR
+# 2. ROBUST STRUCTURAL ASSET DATA MATRIX (ALL REQUESTED ASSETS SEEDED)
 @st.cache_data
 def get_clean_universe():
     raw_lines = [
@@ -84,20 +84,21 @@ def get_clean_universe():
     ]
     compiled = []
     for line in raw_lines:
-        parts = line.split("|")
-        compiled.append([
-            parts[0], parts[1], parts[2], parts[3], float(parts[4]), 
-            float(parts[5]), float(parts[6]), parts[7], float(parts[8]), parts[9], parts[10],
-            float(parts[11]), float(parts[12]), float(parts[13]), float(parts[14]), parts[15], parts[16], float(parts[17]), float(parts[18])
-        ])
-    cols = ["category", "name", "ticker", "currency", "price", "ytd", "ann_10y", "mcap", "vol", "industry", "geo", "qoq_rev", "yoy_rev", "gross_margin", "op_margin", "fcf", "capex", "utilization", "yield_rate"]
-    return pd.DataFrame(compiled, columns=cols)
+        p = line.split("|")
+        compiled.append({
+            "category": p[0], "name": p[1], "ticker": p[2], "currency": p[3], "price": float(p[4]),
+            "ytd": float(p[5]), "ann_10y": float(p[6]), "mcap": p[7], "vol": float(p[8]), "industry": p[9], "geo": p[10],
+            "qoq_rev": float(p[11]), "yoy_rev": float(p[12]), "gross_margin": float(p[13]), "op_margin": float(p[14]),
+            "fcf": p[15], "capex": p[16], "utilization": float(p[17]), "yield_rate": float(p[18])
+        })
+    return pd.DataFrame(compiled)
 
 df_universe = get_clean_universe()
 
 if "focused_key" not in st.session_state:
     st.session_state.focused_key = "NVDA"
 
+if "portfolio_weights" not in st.session_state:
 
 
 
