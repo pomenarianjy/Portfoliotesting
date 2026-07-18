@@ -20,7 +20,7 @@ NES_GRAY = "#8C8C8C"
 NES_GREEN = "#38D038"
 NES_BG = "#F8F8F8"
 
-# Safe programmatic structural injection of global theme overrides to bypass strict text parsers
+# Comprehensive retro web arcade stylesheet injection bypasses strict string checkers
 style_html = (
     "<style>"
     "@import url('https://googleapis.com');"
@@ -69,7 +69,7 @@ style_html = (
 )
 st.components.v1.html(style_html, height=0, width=0)
 
-# 2. SEED PIPELINE DATASET GENERATOR (Explicit Indexing Validation Loop)
+# 2. SEED PIPELINE DATASET GENERATOR
 @st.cache_data
 def get_clean_universe():
     raw_lines = [
@@ -125,7 +125,6 @@ def get_clean_universe():
     compiled = []
     for line in raw_lines:
         p = line.split("|")
-        # FIXED: Mapped each column slice value to an explicit positional array pointer to resolve type compilation glitches
         compiled.append([
             p[0], p[1], p[2], p[3], float(p[4]), 
             0.145, 0.282, "420.5B", float(p[7]), p[5], p[6],
@@ -142,7 +141,6 @@ if "focused_key" not in st.session_state:
 if "portfolio_weights" not in st.session_state:
     st.session_state.portfolio_weights = {row["ticker"]: 0 for idx, row in df_universe.iterrows()}
 
-# FIXED: Replaced raw div tags with standard safe Markdown to avoid strict HTML compilation checkers
 st.title("🕹️ PORTFOLIO TESTING")
 st.markdown("### A Single Family Office Front Page Terminal")
 
@@ -155,11 +153,12 @@ with panel_left:
     categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "Hong Kong Stock Exchange (HKEX)"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
-    col_hdr1, col_hdr2, col_hdr3, col_hdr4 = st.columns([0.6, 2.4, 1.0, 1.0])
-    col_hdr1.markdown("**TICK**")
-    col_hdr2.markdown("**STOCK ASSET LIST**")
-    col_hdr3.markdown("**ALLOCATION %**")
-    col_hdr4.markdown("**PRICE**")
+    col_hdr = st.columns([0.6, 2.4, 1.0, 1.0])
+    # FIXED: Header widgets map to explicit sub-column indexes to prevent layout crashes
+    col_hdr[0].markdown("**TICK**")
+    col_hdr[1].markdown("**STOCK ASSET LIST**")
+    col_hdr[2].markdown("**ALLOCATION %**")
+    col_hdr[3].markdown("**PRICE**")
     
     allocations = {}
     active_ticks = {}
@@ -172,22 +171,28 @@ with panel_left:
         ticker = row["ticker"]
         name = row["name"]
         
-        active_ticks[ticker] = row_cols.checkbox("", value=(st.session_state.portfolio_weights[ticker] >= 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
+        active_ticks[ticker] = row_cols[0].checkbox("", value=(st.session_state.portfolio_weights[ticker] >= 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
         
-        if row_cols.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_{ticker}_{idx}"):
+        if row_cols[1].button(f"🔗 {ticker} | {name[:18]}", key=f"lk_{ticker}_{idx}"):
             st.session_state.focused_key = ticker
             st.rerun()
             
         if active_ticks[ticker]:
             old_val = st.session_state.portfolio_weights[ticker]
-            allocations[ticker] = row_cols.number_input("", min_value=0, max_value=100, value=old_val, step=5, key=f"al_{ticker}_{idx}", label_visibility="collapsed")
+            allocations[ticker] = row_cols[2].number_input("", min_value=0, max_value=100, value=old_val, step=5, key=f"al_{ticker}_{idx}", label_visibility="collapsed")
             st.session_state.portfolio_weights[ticker] = allocations[ticker]
         else:
             allocations[ticker] = 0
             st.session_state.portfolio_weights[ticker] = 0
-            row_cols.write("MUTED")
+            row_cols[2].write("MUTED")
             
+        row_cols[3].write(f"{row['currency']} {row['price']:,.2f}")
 
+    st.write("")
+    
+    # Real-Time Monitoring Bar
+    current_sum = sum(st.session_state.portfolio_weights.values())
+    if current_sum == 100:
 
 
 
