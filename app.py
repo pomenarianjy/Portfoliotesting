@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL Technology ASSETS EMBEDDED INTEGRALLY)
+# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL TECHNOLOGY STOCKS EMBEDDED INTEGRALLY)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -106,10 +106,10 @@ with st.spinner("Streaming live price quotes directly from global tech terminals
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
 if "df_portfolio" not in st.session_state:
     base_df = pd.DataFrame(LIVE_DATA)
-    if "SELECT" not in base_df.columns:
-        base_df.insert(0, "SELECT", False)
-    if "ALLOCATION %" not in base_df.columns:
-        base_df["ALLOCATION %"] = 0
+    base_df.insert(0, "SELECT", False)
+    base_df["ALLOCATION %"] = 0
+    # FIXED: Explicitly set string ticker as index to prevent index distortion during filtering loops
+    base_df.set_index("ticker", inplace=False)
     st.session_state.df_portfolio = base_df
 
 st.title("📊 JASMINE'S LIVE PORTFOLIO PANEL")
