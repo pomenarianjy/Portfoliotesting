@@ -64,12 +64,10 @@ for t in ["TSM", "UMC", "ASX"]:
 def load_live_market_data():
     enriched_data = []
     for idx, ticker in enumerate(TICKERS_LIST):
-        # Establish dynamic financial metrics and structural dictionary blocks
         last_price = 150.0
         ann_10y = 0.22
         vol = 0.32
         
-        # Extended statistical fallbacks
         market_cap = "N/A"
         pe_ratio = "N/A"
         div_yield = "N/A"
@@ -97,7 +95,6 @@ def load_live_market_data():
                     if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
                     if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
                     
-                    # Capture Advanced Live Data Profiles
                     raw_cap = info.get('marketCap')
                     if raw_cap:
                         if raw_cap >= 1e12: market_cap = f"${raw_cap / 1e12:.2f}T"
@@ -161,6 +158,31 @@ with panel_left:
     categories = ["All"] + sorted(list(set(CATEGORIES_LIST)))
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
+    # FILTER ACTIONS: Equal distribution or reset across currently filtered assets
+    visible_tickers = [item["ticker"] for item in LIVE_DATA if selected_cat == "All" or item["category"] == selected_cat]
+    
+    act_col1, act_col2 = st.columns(2)
+    if act_col1.button("⚖️ Distribute Equally (Filtered)", use_container_width=True):
+        n_assets = len(visible_tickers)
+        if n_assets > 0:
+            # Clear all weights first
+            for tk in TICKERS_LIST:
+                st.session_state.portfolio_weights[tk] = 0
+            
+            # Simple division with rounding allocation logic
+            base_weight = 100 // n_assets
+            remainder = 100 % n_assets
+            
+            for i, tk in enumerate(visible_tickers):
+                st.session_state.portfolio_weights[tk] = base_weight + (1 if i < remainder else 0)
+            st.rerun()
+
+    if act_col2.button("🔄 Reset All Allocations", use_container_width=True):
+        st.session_state.portfolio_weights = {str(tk): 0 for tk in TICKERS_LIST}
+        st.rerun()
+        
+    st.markdown("---")
+
     ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
     ch1.markdown("**TICK**")
     ch2.markdown("**STOCK ASSET LIST**")
@@ -219,14 +241,12 @@ with panel_right:
         st.text(f"{target_record['name']} — {target_record['category']} Universe")
         st.markdown("---")
         
-        # Primary Trading Metrics Block
         met1, met2 = st.columns(2)
         met1.metric("LAST CLOSE PRICE", f"{target_record['currency']} {target_record['price']:,.2f}")
         met2.metric("IMPLIED RETURN RATE", f"{target_record['ann_10y']*100:.1f}%")
         
         st.markdown("### 📈 Core Advanced Statistics")
         
-        # Advanced Structural Statistics Fields
         stat_df = pd.DataFrame({
             "Metric Parameter": [
                 "Market Capitalization", 
@@ -246,7 +266,6 @@ with panel_right:
             ]
         })
         
-        # Display crisp, interactive tabular overview of asset performance values
         st.dataframe(stat_df, hide_index=True, use_container_width=True)
     else:
         st.write("Select an active asset link to load operational data structures.")
