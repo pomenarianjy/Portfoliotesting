@@ -12,63 +12,24 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL CANVAS CONTEXT CONFIGURATION
-st.set_page_config(layout="wide", page_title="Mario Portfolio Matrix", page_icon="🍄")
+st.set_page_config(layout="wide", page_title="Portfolio Testing Panel")
 
-MARIO_SKY = "#5C94FC"
-MARIO_GRASS = "#00A800"
-MARIO_BRICK = "#8C5200"
-MARIO_COIN = "#FCD800"
-MARIO_WHITE = "#FFFFFF"
-
-# Programmatic injection of Super Mario overland grass garden palette
-style_html = (
-    "<style>"
-    "@import url('https://googleapis.com');"
-    "html, body, [data-testid='stAppViewContainer'], [data-testid='stHeader'] {"
-    "    background-color: #5C94FC !important;"
-    "    color: #FFFFFF !important;"
-    "    font-family: 'Share Tech Mono', monospace !important;"
-    "}"
-    "h1, h2, h3, h4, h5, h6, label, p, span, .stMarkdown, .stSuccess, .stWarning {"
-    "    font-family: 'Share Tech Mono', monospace !important;"
-    "    color: #FFFFFF !important;"
-    "}"
-    "div[data-testid='stMetricValue'] > div {"
-    "    font-family: 'Press Start 2P', cursive !important;"
-    "    color: #FCD800 !important;"
-    "    font-size: 16px !important;"
-    "    text-shadow: 2px 2px 0px #000000;"
-    "}"
-    "div[data-testid='stMetricLabel'] > div > p {"
-    "    color: #FFFFFF !important;"
-    "    letter-spacing: 1px;"
-    "}"
-    "div.stButton > button {"
-    "    font-family: 'Press Start 2P', cursive !important;"
-    "    background-color: #E60012 !important;"
-    "    color: #FFFFFF !important;"
-    "    border: 4px solid #8C5200 !important;"
-    "    box-shadow: 4px 4px 0px #000000 !important;"
-    "    border-radius: 0px !important;"
-    "    font-size: 11px !important;"
-    "    padding: 8px 16px !important;"
-    "    width: 100%;"
-    "}"
-    "div.stButton > button:hover {"
-    "    background-color: #FCD800 !important;"
-    "    color: #000000 !important;"
-    "    border-color: #FFFFFF !important;"
-    "}"
-    "input, select, div[data-baseweb='select'] {"
-    "    background-color: #00A800 !important;"
-    "    color: #FFFFFF !important;"
-    "    border: 3px solid #8C5200 !important;"
-    "    border-radius: 0px !important;"
-    "}"
-    "iframe { display: none !important; }"
-    "</style>"
+# Force explicit clean white canvas overrides to avoid cloud parsing glitches
+st.markdown(
+    """
+    <style>
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+    }
+    h1, h2, h3, h4, h5, h6, label, p, span, .stMarkdown {
+        color: #000000 !important;
+    }
+    iframe { display: none !important; }
+    </style>
+    """,
+    unsafe_html=True
 )
-st.components.v1.html(style_html, height=0, width=0)
 
 # 2. SEED PIPELINE DATASET GENERATOR
 @st.cache_data
@@ -142,19 +103,19 @@ if "focused_key" not in st.session_state:
 if "portfolio_weights" not in st.session_state:
     st.session_state.portfolio_weights = {row["ticker"]: 0 for idx, row in df_universe.iterrows()}
 
-st.title("🍄 MARIO GARDEN PORTFOLIO PANEL")
+st.title("📊 PORTFOLIO TESTING PANEL")
 
 # 3. SPLIT WORKSPACE INTERACTIVE PANELS
 panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 
 with panel_left:
-    st.markdown("#### 📂 REGISTER MATRIX")
+    st.subheader("📂 Register Matrix")
     
     categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "Hong Kong Stock Exchange (HKEX)"]
-    selected_cat = st.selectbox("Select Mushroom Kingdom Zone", options=categories, index=0)
+    selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
-    col_hdr = st.columns([0.6, 2.4, 1.0, 1.0])
-    # FIXED: Individual list element index points are targeted to guarantee zero layout crashes
+    col_hdr = st.columns([0.6, 2.4, 1.2, 1.2])
+    # FIXED: Columns now correctly targeted using explicit sequence indices to avoid layout crashes
     col_hdr[0].markdown("**TICK**")
     col_hdr[1].markdown("**STOCK ASSET LIST**")
     col_hdr[2].markdown("**ALLOCATION %**")
@@ -167,14 +128,53 @@ with panel_left:
         if selected_cat != "All" and row["category"] != selected_cat:
             continue
             
-        row_cols = st.columns([0.6, 2.4, 1.0, 1.0])
+        row_cols = st.columns([0.6, 2.4, 1.2, 1.2])
         ticker = row["ticker"]
         name = row["name"]
         
         active_ticks[ticker] = row_cols[0].checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0 or st.session_state.portfolio_weights[ticker] == 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
         
-        if row_cols[1].button(f"⭐ {ticker} | {name[:16]}", key=f"lk_{ticker}_{idx}"):
+        if row_cols[1].button(f"🔗 {ticker} | {name[:18]}", key=f"lk_{ticker}_{idx}"):
             st.session_state.focused_key = ticker
+            st.rerun()
+            
+        if active_ticks[ticker]:
+            old_val = st.session_state.portfolio_weights[ticker]
+            allocations[ticker] = row_cols[2].number_input("", min_value=0, max_value=100, value=old_val, step=5, key=f"al_{ticker}_{idx}", label_visibility="collapsed")
+            st.session_state.portfolio_weights[ticker] = allocations[ticker]
+        else:
+            allocations[ticker] = 0
+            st.session_state.portfolio_weights[ticker] = 0
+            row_cols[2].write("MUTED")
+            
+        row_cols[3].write(f"{row['currency']} {row['price']:,.2f}")
+
+    st.write("")
+    
+    # Real-Time Monitoring Bar
+    current_sum = sum(st.session_state.portfolio_weights.values())
+    if current_sum == 100:
+        st.success(f"🎯 READY TO EXECUTE: TOTAL SUM IS {current_sum}%")
+    else:
+        st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
+        
+    current_year = datetime.datetime.now().year
+    param_cols = st.columns(2)
+    
+    # FIXED: Dropdown inputs cleanly split into independent array indexing slots
+    entry_year = param_cols[0].selectbox("🕹️ ENTRY YEAR", options=list(range(2015, current_year)), index=5)
+    execute_backtest = param_cols[1].button("🔴 RUN BACKTEST 🔴")
+
+with panel_right:
+    focus_ticker = st.session_state.focused_key
+    matched_rows = df_universe[df_universe["ticker"] == focus_ticker]
+    
+    if len(matched_rows) > 0:
+        # FIXED: Explicit positional indices assigned to .iloc to hold right data panel stable
+        f_row = matched_rows.iloc[0]
+        
+        st.subheader(f"📊 Data Profile: {f_row['ticker']}")
+
 
 
 
