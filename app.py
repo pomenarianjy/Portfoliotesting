@@ -77,8 +77,9 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    # FIXED: Written explicitly inside the widget parameters to block markdown filter issues
-    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=[2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], index=4)
+    # Programmatic evaluation avoids raw text array parsing truncations
+    years_list = list(range(2016, 2026))
+    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=years_list, index=4)
     execute_backtest = st.button("🔴 RUN BACKTEST 🔴", use_container_width=True)
 
 with panel_right:
@@ -106,7 +107,7 @@ with panel_right:
     else:
         st.write("Select an active asset to load data parameters.")
 
-# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX WITH AGGREGATED METRICS
 if execute_backtest:
     total_alloc = sum(st.session_state.portfolio_weights.values())
     if total_alloc != 100:
@@ -118,6 +119,9 @@ if execute_backtest:
         table_summary = []
         current_year = 2026
         years_elapsed = current_year - entry_year
+        
+        total_initial_principal = 100000.0
+        total_terminal_value = 0.0
         
         for ticker, weight in st.session_state.portfolio_weights.items():
             if weight <= 0:
@@ -134,8 +138,10 @@ if execute_backtest:
                 v = float(asset_data['vol'])
                 
                 growth_factor = np.exp((r - 0.5 * (v**2)) * years_elapsed)
-                allocated_base = 100000 * (weight / 100.0)
+                allocated_base = total_initial_principal * (weight / 100.0)
                 final_v = allocated_base * growth_factor
+                
+                total_terminal_value += final_v
                 perf_pct = (growth_factor - 1.0) * 100
                 
                 table_summary.append({
@@ -147,9 +153,17 @@ if execute_backtest:
                 })
             
         if table_summary:
+            # Calculate and display the aggregated return metrics
+            portfolio_total_return_pct = ((total_terminal_value / total_initial_principal) - 1.0) * 100
+            portfolio_cagr_pct = ((total_terminal_value / total_initial_principal) ** (1.0 / years_elapsed) - 1.0) * 100 if years_elapsed > 0 else 0.0
+            
+            st.markdown("### 📈 Portfolio Summary Metrics")
+            m_agg1, m_agg2, m_agg3 = st.columns(3)
+            m_agg1.metric("TOTAL INITIAL PRINCIPAL", f"${total_initial_principal:,.2f}")
+            m_agg2.metric("PORTFOLIO TERMINAL VALUE", f"${total_terminal_value:,.2f}", f"{portfolio_total_return_pct:+.2f}% Total Return")
+            m_agg3.metric("PORTFOLIO SIMULATED CAGR", f"{portfolio_cagr_pct:.2f}%")
+            
             st.markdown("### 📋 Position Historical Balances Ledger")
             st.table(table_summary)
         else:
             st.error("No active positions selected.")
-
-
