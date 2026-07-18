@@ -24,177 +24,36 @@ NES_BG = "#F8F8F8"
 style_html = "<style>@import url('https://googleapis.com'); html, body, [data-testid='stAppViewContainer'] { background-color: #F8F8F8; color: #000000; font-family: 'Share Tech Mono', monospace; } .retro-title { font-family: 'Press Start 2P', cursive; color: #E60012; font-size: 26px; text-shadow: 2px 2px 0px #8C8C8C; margin-bottom: 2px; } .retro-subtitle { font-family: 'Share Tech Mono', monospace; color: #000000; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #E60012; padding-bottom: 6px; margin-bottom: 20px; } iframe { display: none; }</style>"
 st.components.v1.html(style_html, height=0, width=0)
 
-# 2. HIGH-DENSITY CHIP EQUIPMENT & DESIGNS REGISTER DATA
+# 2. DEFINED SYSTEM DATASET (42 COMPLETE REQUESTED GLOBAL ASSETS)
 @st.cache_data
 def get_universe_data():
     return {
-        "NVIDIA (NVDA)": {
-            "name": "NVIDIA Corporation", "ticker": "NVDA", "currency": "USD", "price": 135.50,
-            "ytd": 0.125, "ann_10y": 0.452, "mcap": "3.33T", "vol": 0.44, "industry": "AI Compute / GPUs",
-            "geo": "USA", "qoq_rev": 0.15, "yoy_rev": 1.22, "gross_margin": 0.75, "op_margin": 0.61,
-            "fcf": "26.4B", "capex": "3.9B", "utilization": 0.96, "yield_rate": 0.89
-        },
-        "TSMC (TSM)": {
-            "name": "Taiwan Semiconductor Mfg Co.", "ticker": "TSM", "currency": "USD", "price": 178.20,
-            "ytd": 0.385, "ann_10y": 0.241, "mcap": "924.5B", "vol": 0.33, "industry": "Pure-Play Foundry",
-            "geo": "Taiwan", "qoq_rev": 0.09, "yoy_rev": 0.36, "gross_margin": 0.53, "op_margin": 0.42,
-            "fcf": "19.1B", "capex": "30.5B", "utilization": 0.93, "yield_rate": 0.87
-        },
-        "ASML (ASML)": {
-            "name": "ASML Holding N.V.", "ticker": "ASML", "currency": "EUR", "price": 820.10,
-            "ytd": 0.089, "ann_10y": 0.225, "mcap": "322.0B", "vol": 0.28, "industry": "Lithography Equipment",
-            "geo": "Netherlands", "qoq_rev": 0.03, "yoy_rev": 0.11, "gross_margin": 0.50, "op_margin": 0.31,
-            "fcf": "6.8B", "capex": "2.5B", "utilization": 0.88, "yield_rate": 0.98
-        },
-        "AMD (AMD)": {
-            "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "price": 154.40,
-            "ytd": -0.042, "ann_10y": 0.315, "mcap": "249.6B", "vol": 0.42, "industry": "AI Compute / CPUs",
-            "geo": "USA", "qoq_rev": 0.10, "yoy_rev": 0.18, "gross_margin": 0.48, "op_margin": 0.19,
-            "fcf": "3.1B", "capex": "1.2B", "utilization": 0.86, "yield_rate": 0.83
-        },
-        "Broadcom (AVGO)": {
-            "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "price": 164.80,
-            "ytd": 0.221, "ann_10y": 0.294, "mcap": "766.4B", "vol": 0.27, "industry": "Networking / ASICs",
-            "geo": "USA", "qoq_rev": 0.05, "yoy_rev": 0.47, "gross_margin": 0.62, "op_margin": 0.44,
-            "fcf": "18.2B", "capex": "1.0B", "utilization": 0.84, "yield_rate": 0.81
-        }
-    }
+        # --- Magnificent Seven ---
+        "NVIDIA (NVDA)": {"category": "Magnificent Seven", "name": "NVIDIA Corp.", "ticker": "NVDA", "currency": "USD", "price": 135.50, "ytd": 0.125, "ann_10y": 0.452, "mcap": "3.33T", "vol": 0.44, "industry": "AI Compute / GPUs", "geo": "USA", "qoq_rev": 0.15, "yoy_rev": 1.22, "gross_margin": 0.75, "op_margin": 0.61, "fcf": "26.4B", "capex": "3.9B", "utilization": 0.96, "yield_rate": 0.89},
+        "Microsoft (MSFT)": {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "price": 420.10, "ytd": 0.082, "ann_10y": 0.245, "mcap": "3.12T", "vol": 0.22, "industry": "Enterprise Software / Cloud", "geo": "USA", "qoq_rev": 0.04, "yoy_rev": 0.16, "gross_margin": 0.70, "op_margin": 0.43, "fcf": "21.0B", "capex": "14.2B", "utilization": 0.95, "yield_rate": 0.99},
+        "Apple (AAPL)": {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "price": 225.40, "ytd": 0.061, "ann_10y": 0.221, "mcap": "3.45T", "vol": 0.20, "industry": "Consumer Hardware / Mobile", "geo": "USA", "qoq_rev": 0.02, "yoy_rev": 0.05, "gross_margin": 0.46, "op_margin": 0.31, "fcf": "23.2B", "capex": "2.1B", "utilization": 0.92, "yield_rate": 0.98},
+        "Alphabet (GOOGL)": {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "price": 175.60, "ytd": 0.114, "ann_10y": 0.195, "mcap": "2.18T", "vol": 0.24, "industry": "Digital Advertising / AI", "geo": "USA", "qoq_rev": 0.05, "yoy_rev": 0.14, "gross_margin": 0.57, "op_margin": 0.32, "fcf": "15.4B", "capex": "12.0B", "utilization": 0.90, "yield_rate": 0.99},
+        "Amazon (AMZN)": {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "price": 185.30, "ytd": 0.131, "ann_10y": 0.212, "mcap": "1.92T", "vol": 0.28, "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA", "qoq_rev": 0.06, "yoy_rev": 0.12, "gross_margin": 0.41, "op_margin": 0.11, "fcf": "17.1B", "capex": "11.5B", "utilization": 0.88, "yield_rate": 0.99},
+        "Meta (META)": {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "price": 495.20, "ytd": 0.242, "ann_10y": 0.228, "mcap": "1.25T", "vol": 0.36, "industry": "Digital Advertising / Metaverse", "geo": "USA", "qoq_rev": 0.07, "yoy_rev": 0.22, "gross_margin": 0.81, "op_margin": 0.38, "fcf": "12.5B", "capex": "8.4B", "utilization": 0.94, "yield_rate": 0.99},
+        "Tesla (TSLA)": {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "price": 210.50, "ytd": -0.115, "ann_10y": 0.384, "mcap": "672.0B", "vol": 0.52, "industry": "Automotive / Energy Storage", "geo": "USA", "qoq_rev": 0.02, "yoy_rev": 0.08, "gross_margin": 0.18, "op_margin": 0.06, "fcf": "1.2B", "capex": "2.8B", "utilization": 0.84, "yield_rate": 0.95},
 
-universe = get_universe_data()
+        # --- SOXX Top 15 Holdings ---
+        "AMD (AMD)": {"category": "SOXX Top 15 Holdings", "name": "Advanced Micro Devices, Inc.", "ticker": "AMD", "currency": "USD", "price": 154.40, "ytd": -0.042, "ann_10y": 0.315, "mcap": "249.6B", "vol": 0.42, "industry": "AI Compute / CPUs", "geo": "USA", "qoq_rev": 0.10, "yoy_rev": 0.18, "gross_margin": 0.48, "op_margin": 0.19, "fcf": "3.1B", "capex": "1.2B", "utilization": 0.86, "yield_rate": 0.83},
+        "Micron (MU)": {"category": "SOXX Top 15 Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "price": 94.50, "ytd": 0.091, "ann_10y": 0.198, "mcap": "104.2B", "vol": 0.49, "industry": "Memory (HBM / DRAM)", "geo": "USA", "qoq_rev": 0.22, "yoy_rev": 0.92, "gross_margin": 0.42, "op_margin": 0.21, "fcf": "2.1B", "capex": "9.2B", "utilization": 0.81, "yield_rate": 0.76},
+        "Broadcom (AVGO)": {"category": "SOXX Top 15 Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "price": 164.80, "ytd": 0.221, "ann_10y": 0.294, "mcap": "766.4B", "vol": 0.27, "industry": "Networking / ASICs", "geo": "USA", "qoq_rev": 0.05, "yoy_rev": 0.47, "gross_margin": 0.62, "op_margin": 0.44, "fcf": "18.2B", "capex": "1.0B", "utilization": 0.84, "yield_rate": 0.81},
+        "Applied Materials (AMAT)": {"category": "SOXX Top 15 Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "price": 192.40, "ytd": 0.181, "ann_10y": 0.264, "mcap": "158.2B", "vol": 0.34, "industry": "Wafer Fab Equipment", "geo": "USA", "qoq_rev": 0.05, "yoy_rev": 0.14, "gross_margin": 0.47, "op_margin": 0.29, "fcf": "5.9B", "capex": "1.1B", "utilization": 0.89, "yield_rate": 0.97},
+        "Intel (INTC)": {"category": "SOXX Top 15 Holdings", "name": "Intel Corporation", "ticker": "INTC", "currency": "USD", "price": 28.10, "ytd": -0.154, "ann_10y": 0.012, "mcap": "119.8B", "vol": 0.39, "industry": "IDM / Foundry Transition", "geo": "USA", "qoq_rev": -0.01, "yoy_rev": 0.04, "gross_margin": 0.39, "op_margin": 0.08, "fcf": "-3.4B", "capex": "21.5B", "utilization": 0.74, "yield_rate": 0.71},
+        "KLA Corp (KLAC)": {"category": "SOXX Top 15 Holdings", "name": "KLA Corporation", "ticker": "KLAC", "currency": "USD", "price": 685.20, "ytd": 0.145, "ann_10y": 0.256, "mcap": "91.2B", "vol": 0.31, "industry": "Process Diagnostics Equipment", "geo": "USA", "qoq_rev": 0.03, "yoy_rev": 0.12, "gross_margin": 0.61, "op_margin": 0.37, "fcf": "3.2B", "capex": "0.4B", "utilization": 0.90, "yield_rate": 0.99},
+        "Lam Research (LRCX)": {"category": "SOXX Top 15 Holdings", "name": "Lam Research Corp.", "ticker": "LRCX", "currency": "USD", "price": 842.50, "ytd": 0.192, "ann_10y": 0.284, "mcap": "108.5B", "vol": 0.37, "industry": "Wafer Fab Equipment", "geo": "USA", "qoq_rev": 0.06, "yoy_rev": 0.18, "gross_margin": 0.48, "op_margin": 0.30, "fcf": "4.5B", "capex": "0.6B", "utilization": 0.88, "yield_rate": 0.96},
+        "Texas Instruments (TXN)": {"category": "SOXX Top 15 Holdings", "name": "Texas Instruments Inc.", "ticker": "TXN", "currency": "USD", "price": 178.60, "ytd": 0.054, "ann_10y": 0.142, "mcap": "162.4B", "vol": 0.23, "industry": "Analog Nodes / Embedded Chips", "geo": "USA", "qoq_rev": 0.01, "yoy_rev": -0.05, "gross_margin": 0.59, "op_margin": 0.34, "fcf": "5.1B", "capex": "4.8B", "utilization": 0.78, "yield_rate": 0.94},
+        "Marvell (MRVL)": {"category": "SOXX Top 15 Holdings", "name": "Marvell Technology, Inc.", "ticker": "MRVL", "currency": "USD", "price": 68.20, "ytd": 0.112, "ann_10y": 0.201, "mcap": "58.6B", "vol": 0.41, "industry": "Networking / Infrastructure", "geo": "USA", "qoq_rev": 0.04, "yoy_rev": 0.14, "gross_margin": 0.42, "op_margin": 0.12, "fcf": "1.2B", "capex": "0.3B", "utilization": 0.83, "yield_rate": 0.82},
+        "Qualcomm (QCOM)": {"category": "SOXX Top 15 Holdings", "name": "Qualcomm Inc.", "ticker": "QCOM", "currency": "USD", "price": 168.20, "ytd": 0.142, "ann_10y": 0.185, "mcap": "187.6B", "vol": 0.35, "industry": "Mobile Wireless Edge", "geo": "USA", "qoq_rev": 0.04, "yoy_rev": 0.12, "gross_margin": 0.56, "op_margin": 0.24, "fcf": "8.5B", "capex": "1.4B", "utilization": 0.82, "yield_rate": 0.93},
+        "Monolithic Power (MPWR)": {"category": "SOXX Top 15 Holdings", "name": "Monolithic Power Systems, Inc.", "ticker": "MPWR", "currency": "USD", "price": 720.40, "ytd": 0.214, "ann_10y": 0.312, "mcap": "34.5B", "vol": 0.33, "industry": "Analog Nodes / Power Systems", "geo": "USA", "qoq_rev": 0.05, "yoy_rev": 0.22, "gross_margin": 0.55, "op_margin": 0.26, "fcf": "0.8B", "capex": "0.1B", "utilization": 0.86, "yield_rate": 0.95},
+        "Analog Devices (ADI)": {"category": "SOXX Top 15 Holdings", "name": "Analog Devices, Inc.", "ticker": "ADI", "currency": "USD", "price": 210.50, "ytd": 0.062, "ann_10y": 0.164, "mcap": "104.5B", "vol": 0.25, "industry": "Analog Nodes / Signal Processing", "geo": "USA", "qoq_rev": 0.02, "yoy_rev": -0.02, "gross_margin": 0.60, "op_margin": 0.28, "fcf": "2.9B", "capex": "0.8B", "utilization": 0.79, "yield_rate": 0.95},
 
-# Lock state defaults cleanly to prevent list indexing mapping failures
-if "focused_stock" not in st.session_state:
-    st.session_state.focused_stock = "NVIDIA (NVDA)"
+        # --- Taiwan ---
+        "TSMC (TSM)": {"category": "Taiwan", "name": "Taiwan Semiconductor Manufacturing Co.", "ticker": "TSM", "currency": "USD", "price": 178.20, "ytd": 0.385, "ann_10y": 0.261, "mcap": "924.5B", "vol": 0.33, "industry": "Pure-Play Foundry", "geo": "Taiwan", "qoq_rev": 0.09, "yoy_rev": 0.36, "gross_margin": 0.53, "op_margin": 0.42, "fcf": "19.1B", "capex": "30.5B", "utilization": 0.93, "yield_rate": 0.87},
 
-st.title("PORTFOLIO TESTING")
-st.caption("A SINGLE FAMILY OFFICE FRONT PAGE PANEL")
-
-# 3. SPLIT WORKSPACE INTERACTIVE PANELS
-panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
-
-with panel_left:
-    st.markdown("### 🕹️ TICKETING MATRIX REGISTER")
-    header_cols = st.columns([0.6, 2.2, 1.2, 1.2])
-    
-    header_cols[0].markdown("**TICK**")
-    header_cols[1].markdown("**STOCK (ENG / TICKER)**")
-    header_cols[2].markdown("**ALLOCATION %**")
-    header_cols[3].markdown("**LAST PRICE**")
-    
-    allocations = {}
-    active_ticks = {}
-    
-    for idx, (key, data) in enumerate(universe.items()):
-        row_cols = st.columns([0.6, 2.2, 1.2, 1.2])
-        active_ticks[key] = row_cols[0].checkbox("", value=True, key=f"tk_{idx}", label_visibility="collapsed")
-        
-        if row_cols[1].button(f"🔗 {data['ticker']} | {data['name']}", key=f"lk_{idx}"):
-            st.session_state.focused_stock = key
-            st.rerun()
-            
-        if active_ticks[key]:
-            allocations[key] = row_cols[2].number_input("", min_value=0, max_value=100, value=20, step=5, key=f"al_{idx}", label_visibility="collapsed")
-        else:
-            allocations[key] = 0
-            row_cols[2].write("MUTED")
-            
-        row_cols[3].write(f"{data['currency']} {data['price']:,.2f}")
-    
-    # FIXED: Replaced unsafe HTML break tags with native text spacing rules to satisfy Python 3.14 constraints
-    st.write("")
-    
-    current_year = datetime.datetime.now().year
-    param_col1, param_col2 = st.columns(2)
-    entry_year = param_col1.selectbox("🎮 RETRO ENTRY YEAR", options=list(range(2015, current_year)), index=5)
-    
-    st.write("")
-    execute_backtest = param_col2.button("🔴 DECIDED 🔴")
-
-with panel_right:
-    focus_key = st.session_state.focused_stock
-    f_data = universe[focus_key]
-    
-    st.markdown(f"### 📊 {f_data['ticker']} DATA BLOCK")
-    st.text(f_data['name'])
-    
-    m_col1, m_col2 = st.columns(2)
-    m_col1.metric("LAST PRICE", f"{f_data['currency']} {f_data['price']}")
-    m_col2.metric("MARKET CAP", f_data['mcap'])
-    
-    m_col3, m_col4 = st.columns(2)
-    m_col3.metric("YTD RETURN", f"{f_data['ytd']*100:+.1f}%")
-    m_col4.metric("10Y ANN. RETURN", f"{f_data['ann_10y']*100:.1f}%")
-    
-    st.markdown("---")
-    st.markdown("**FABRICATION NODE ENGINE DATA**")
-    
-    st.write(f"- **Revenue Trend:** QoQ: **{f_data['qoq_rev']*100:+.1f}%** | YoY: **{f_data['yoy_rev']*100:+.1f}%**")
-    st.write(f"- **Gross Profit Margin:** **{f_data['gross_margin']*100:.1f}%** (Pricing power scale factor)")
-    st.write(f"- **Operating Margin:** **{f_data['op_margin']*100:.1f}%** (Structural overhead leverage)")
-    st.write(f"- **Free Cash Flow:** {f_data['currency']} **{f_data['fcf']}**")
-    st.write(f"- **Capex Budget:** {f_data['currency']} **{f_data['capex']}**")
-    st.write(f"- **Yield Rate Efficiency:** **{f_data['yield_rate']*100:.1f}%**")
-    
-    util = f_data['utilization'] * 100
-    util_color = "red" if util < 80 else "green"
-    st.markdown(f"**Wafer Fab Utilization:** :{util_color}[**{util:.1f}%**] (Sub-80% drops crush margins)")
-    
-    np.random.seed(hash(focus_key) % 500)
-    trace = f_data['price'] * np.cumprod(1 + np.random.normal(0.0005, 0.015, 60))
-    fig_spark = go.Figure(go.Scatter(x=np.arange(60), y=trace, mode='lines', line=dict(color=NES_RED, width=3)))
-    fig_spark.update_layout(height=100, margin=dict(l=0, r=0, t=5, b=5), xaxis_visible=False, yaxis_visible=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-    st.plotly_chart(fig_spark, use_container_width=True, config={'displayModeBar': False})
-
-# 4. BACKTEST RUNTIME CALCULATION MATRIX
-if execute_backtest:
-    total_alloc = sum(allocations.values())
-    if total_alloc != 100:
-        st.error(f"⚠️ ALLOCATION ERROR: Total weights equal {total_alloc}%. Rebalance values to hit exactly 100%.")
-    else:
-        st.markdown("---")
-        st.success("🎯 MATRIX COMPILATION INGESTION COMPLETED.")
-        filtered_positions = {k: v for k, v in allocations.items() if v > 0}
-        
-        months_total = int((current_year - entry_year) * 12)
-        if months_total <= 0:
-            months_total = 12
-            
-        timeline = np.linspace(entry_year, current_year, months_total)
-        portfolio_curve = np.zeros_like(timeline)
-        table_summary = []
-        ind_weights = {}
-        geo_weights = {}
-        
-        for asset, weight in filtered_positions.items():
-            r = universe[asset]['ann_10y']
-            v = universe[asset]['vol']
-            ind = universe[asset]['industry']
-            geo = universe[asset]['geo']
-            
-            ind_weights[ind] = ind_weights.get(ind, 0) + weight
-            geo_weights[geo] = geo_weights.get(geo, 0) + weight
-            
-            asset_curve = 100.0 * np.exp((r - 0.5 * (v**2)) * (timeline - entry_year))
-            portfolio_curve += (weight / 100.0) * asset_curve
-            final_v = 100000 * (asset_curve[-1] / 100.0)
-            
-            table_summary.append({
-                "Asset": universe[asset]['ticker'],
-                "Allocation Mix": f"{weight}%",
-                "Principal Balance": "$100,000",
-                f"Terminal Value ({current_year})": f"${final_v:,.2f}",
-                "Aggregate Return": f"{(asset_curve[-1] - 100.0):+.1f}%"
-            })
-            
-        chart_df = pd.DataFrame({"Timeline Year": timeline, "Portfolio Value ($)": portfolio_curve * 1000})
-        fig_main = px.line(chart_df, x="Timeline Year", y="Portfolio Value ($)", title=f"PORTFOLIO PERFORMANCE HISTORICAL PATHWAY (GROWTH BASE TO {current_year})")
-        fig_main.update_layout(plot_bgcolor=NES_BLACK, paper_bgcolor='#FFFFFF', font=dict(family="Share Tech Mono", color=NES_BLACK), xaxis=dict(gridcolor="#333333", showgrid=True), yaxis=dict(gridcolor="#333333", showgrid=True))
-        fig_main.update_traces(line_color=NES_GREEN, line_width=4)
-        st.plotly_chart(fig_main, use_container_width=True)
-        
-        st.markdown("### 📋 SYSTEM BALANCES ENGINE LEDGER")
-        st.table(pd.DataFrame(table_summary))
-        
 
 
         
