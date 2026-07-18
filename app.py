@@ -20,19 +20,18 @@ NES_GRAY = "#8C8C8C"
 NES_GREEN = "#38D038"
 NES_BG = "#F8F8F8"
 
-# Bypassing Python 3.14 parser restrictions via standard single-line string concatenation
-style_block = (
+# FIXED: Injecting style blocks via separate html components to satisfy strict Python 3.14 runtime checks
+style_html = (
     "<style>"
     "@import url('https://googleapis.com');"
     "html, body, [data-testid='stAppViewContainer'] { background-color: #F8F8F8; color: #000000; font-family: 'Share Tech Mono', monospace; }"
     ".retro-title { font-family: 'Press Start 2P', cursive; color: #E60012; font-size: 26px; text-shadow: 2px 2px 0px #8C8C8C; margin-bottom: 2px; }"
     ".retro-subtitle { font-family: 'Share Tech Mono', monospace; color: #000000; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #E60012; padding-bottom: 6px; margin-bottom: 20px; }"
     ".retro-card { background-color: #FFFFFF; border: 3px solid #000000; box-shadow: 4px 4px 0px #8C8C8C; padding: 16px; margin-bottom: 16px; border-radius: 4px; }"
-    ".stButton>button { font-family: 'Press Start 2P', cursive !important; background-color: #38D038 !important; color: #FFFFFF !important; border: 3px solid #000000 !important; box-shadow: 3px 3px 0px #8C8C8C !important; font-size: 13px !important; padding: 12px 0px !important; width: 100%; }"
-    ".stButton>button:hover { background-color: #E60012 !important; }"
+    "iframe { display: none; }" # Hide empty visual spaces from layout engines
     "</style>"
 )
-st.markdown(style_block, unsafe_html=True)
+st.components.v1.html(style_html, height=0, width=0)
 
 # 2. HIGH-DENSITY CHIP EQUIPMENT & DESIGNS REGISTER DATA
 @st.cache_data
@@ -73,17 +72,17 @@ def get_universe_data():
 universe = get_universe_data()
 
 if "focused_stock" not in st.session_state:
-    st.session_state.focused_stock = list(universe.keys())[0]
+    st.session_state.focused_stock = list(universe.keys())
 
-# Display Title Headers
-st.markdown('<div class="retro-title">PORTFOLIO TESTING</div>', unsafe_html=True)
-st.markdown('<div class="retro-subtitle">A Single Family Office Front Page Panel</div>', unsafe_html=True)
+# Headers - safely using native markdown tags to avoid parsing glitches
+st.title("PORTFOLIO TESTING")
+st.caption("A SINGLE FAMILY OFFICE FRONT PAGE PANEL")
 
 # 3. SPLIT WORKSPACE INTERACTIVE PANELS
 panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 
 with panel_left:
-    st.markdown('<div class="retro-card"><strong>🕹️ TICKETING MATRIX REGISTER</strong></div>', unsafe_html=True)
+    st.markdown("### 🕹️ TICKETING MATRIX REGISTER")
     
     header_cols = st.columns([0.6, 2.2, 1.2, 1.2])
     header_cols.markdown("**TICK**")
@@ -124,10 +123,8 @@ with panel_right:
     focus_key = st.session_state.focused_stock
     f_data = universe[focus_key]
     
-    st.markdown('<div class="retro-card" style="border-color: #E60012;">', unsafe_html=True)
-    st.markdown(f"<h3 style='margin:0;'>{f_data['ticker']} DATA BLOCK</h3>", unsafe_html=True)
-    st.caption(f_data['name'])
-    st.markdown("<hr style='margin:10px 0; border:1px solid #000;'/>", unsafe_html=True)
+    st.markdown(f"### 📊 {f_data['ticker']} DATA BLOCK")
+    st.text(f_data['name'])
     
     m_col1, m_col2 = st.columns(2)
     m_col1.metric("LAST PRICE", f"{f_data['currency']} {f_data['price']}")
@@ -137,10 +134,9 @@ with panel_right:
     m_col3.metric("YTD RETURN", f"{f_data['ytd']*100:+.1f}%")
     m_col4.metric("10Y ANN. RETURN", f"{f_data['ann_10y']*100:.1f}%")
     
-    st.markdown("<hr style='margin:10px 0; border:1px dashed #8C8C8C;'/>", unsafe_html=True)
+    st.markdown("---")
     st.markdown("**FABRICATION NODE ENGINE DATA**")
     
-    # FIXED: Sanitized from multi-line f-strings to safe single-line explicit string addition
     node_text = (
         "* **Revenue Trend:** QoQ: **" + f"{f_data['qoq_rev']*100:+.1f}%" + "** | YoY: **" + f"{f_data['yoy_rev']*100:+.1f}%" + "**\n"
         "* **Gross Profit Margin:** **" + f"{f_data['gross_margin']*100:.1f}%" + "** (Advanced Node efficiency)\n"
@@ -160,8 +156,6 @@ with panel_right:
     fig_spark = go.Figure(go.Scatter(x=np.arange(60), y=trace, mode='lines', line=dict(color=NES_RED, width=3)))
     fig_spark.update_layout(height=100, margin=dict(l=0, r=0, t=5, b=5), xaxis_visible=False, yaxis_visible=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig_spark, use_container_width=True, config={'displayModeBar': False})
-    
-    st.markdown('</div>', unsafe_html=True)
 
 # 4. BACKTEST RUNTIME CALCULATION MATRIX
 if execute_backtest:
@@ -170,7 +164,7 @@ if execute_backtest:
     if total_alloc != 100:
         st.error(f"⚠️ ALLOCATION ERROR: Total weights equal {total_alloc}%. Rebalance values to hit exactly 100%.")
     else:
-        st.markdown("<hr style='border:2px solid #000; margin:25px 0;'/>", unsafe_html=True)
+        st.markdown("---")
         st.success("🎯 MATRIX COMPILATION INGESTION COMPLETED.")
         
         filtered_positions = {k: v for k, v in allocations.items() if v > 0}
@@ -190,10 +184,26 @@ if execute_backtest:
             r = universe[asset]['ann_10y']
             v = universe[asset]['vol']
             
-            # Map tracking data for industry and country pies
             ind = universe[asset]['industry']
             geo = universe[asset]['geo']
             ind_weights[ind] = ind_weights.get(ind, 0) + weight
+            geo_weights[geo] = geo_weights.get(geo, 0) + weight
+            
+            asset_curve = 100.0 * np.exp((r - 0.5 * (v**2)) * (timeline - entry_year))
+            portfolio_curve += (weight / 100.0) * (asset_curve - 100.0)
+            final_v = 100000 * (asset_curve[-1] / 100.0)
+            table_summary.append({
+                "Asset": universe[asset]['ticker'],
+                "Allocation Mix": f"{weight}%",
+                "Principal Balance": "$100,000",
+                f"Terminal Value ({current_year})": f"${final_v:,.2f}",
+                "Aggregate Return": f"{(asset_curve[-1] - 100.0):+.1f}%"
+            })
+            
+        chart_df = pd.DataFrame({"Timeline Year": timeline, "Portfolio Value ($)": portfolio_curve * 1000})
+        
+        fig_main = px.line(chart_df, x="Timeline Year", y="Portfolio Value ($)", title=f"PORTFOLIO PERFORMANCE HISTORICAL PATHWAY (GROWTH BASE TO {current_year})")
+        fig_main.update_layout(
 
             
 
