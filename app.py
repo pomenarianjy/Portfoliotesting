@@ -14,6 +14,12 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL CANVAS CONTEXT CONFIGURATION
 st.set_page_config(layout="wide", page_title="Portfolio Testing", page_icon="🎮")
 
+NES_RED = "#E60012"
+NES_BLACK = "#000000"
+NES_GRAY = "#8C8C8C"
+NES_GREEN = "#38D038"
+NES_BG = "#F8F8F8"
+
 # Comprehensive retro web arcade stylesheet injection bypasses strict string checkers
 style_html = (
     "<style>"
@@ -70,11 +76,6 @@ style_html = (
     "    color: #FFFFFF !important;"
     "    border-color: #000000 !important;"
     "}"
-    "div[data-testid='stExpander'] {"
-    "    background-color: #000000 !important;"
-    "    border: 3px solid #38D038 !important;"
-    "    border-radius: 0px !important;"
-    "}"
     "input, select, div[data-baseweb='select'] {"
     "    background-color: #000000 !important;"
     "    color: #38D038 !important;"
@@ -86,10 +87,11 @@ style_html = (
 )
 st.components.v1.html(style_html, height=0, width=0)
 
-# 2. DEFINED DATA ARCHITECTURE GENERATOR
+# 2. SEED SYSTEM INSTITUTIONAL DATASET (ALL 42 RECONSTRUCTED ASSETS DETAILED ACCURATELY)
 @st.cache_data
 def get_clean_universe():
     raw_assets = [
+        # Magnificent Seven
         {"cat": "Magnificent Seven", "name": "Nvidia Corp.", "tk": "NVDA", "cur": "USD", "p": 135.50, "ind": "AI Compute / GPUs", "geo": "USA", "vol": 0.44},
         {"cat": "Magnificent Seven", "name": "Microsoft Corp.", "tk": "MSFT", "cur": "USD", "p": 420.10, "ind": "Enterprise Software", "geo": "USA", "vol": 0.22},
         {"cat": "Magnificent Seven", "name": "Apple Inc.", "tk": "AAPL", "cur": "USD", "p": 225.40, "ind": "Consumer Hardware", "geo": "USA", "vol": 0.20},
@@ -97,6 +99,7 @@ def get_clean_universe():
         {"cat": "Magnificent Seven", "name": "Amazon.com Inc.", "tk": "AMZN", "cur": "USD", "p": 185.30, "ind": "Cloud Infrastructure", "geo": "USA", "vol": 0.28},
         {"cat": "Magnificent Seven", "name": "Meta Platforms Inc.", "tk": "META", "cur": "USD", "p": 495.20, "ind": "Digital Advertising", "geo": "USA", "vol": 0.36},
         {"cat": "Magnificent Seven", "name": "Tesla Inc.", "tk": "TSLA", "cur": "USD", "p": 210.50, "ind": "Automotive / Energy", "geo": "USA", "vol": 0.52},
+        # SOXX Top 15 Holdings
         {"cat": "SOXX Top 15 Holdings", "name": "Advanced Micro Devices", "tk": "AMD", "cur": "USD", "p": 154.40, "ind": "AI Compute / CPUs", "geo": "USA", "vol": 0.42},
         {"cat": "SOXX Top 15 Holdings", "name": "Micron Technology", "tk": "MU", "cur": "USD", "p": 94.50, "ind": "Memory (HBM / DRAM)", "geo": "USA", "vol": 0.49},
         {"cat": "SOXX Top 15 Holdings", "name": "Broadcom Inc.", "tk": "AVGO", "cur": "USD", "p": 164.80, "ind": "Networking / ASICs", "geo": "USA", "vol": 0.27},
@@ -109,6 +112,7 @@ def get_clean_universe():
         {"cat": "SOXX Top 15 Holdings", "name": "Qualcomm Inc.", "tk": "QCOM", "cur": "USD", "p": 168.20, "ind": "Mobile Wireless Edge", "geo": "USA", "vol": 0.35},
         {"cat": "SOXX Top 15 Holdings", "name": "Monolithic Power Systems", "tk": "MPWR", "cur": "USD", "p": 720.40, "ind": "Analog Power Node", "geo": "USA", "vol": 0.33},
         {"cat": "SOXX Top 15 Holdings", "name": "Analog Devices Inc.", "tk": "ADI", "cur": "USD", "p": 210.50, "ind": "Analog Power Node", "geo": "USA", "vol": 0.25},
+        # Taiwan
         {"cat": "Taiwan", "name": "TSMC", "tk": "TSM", "cur": "USD", "p": 178.20, "ind": "Pure-Play Foundry", "geo": "Taiwan", "vol": 0.33},
         {"cat": "Taiwan", "name": "United Microelectronics", "tk": "UMC", "cur": "USD", "p": 7.80, "ind": "Pure-Play Foundry", "geo": "Taiwan", "vol": 0.36},
         {"cat": "Taiwan", "name": "Vanguard International", "tk": "5347.TW", "cur": "TWD", "p": 112.50, "ind": "Pure-Play Foundry", "geo": "Taiwan", "vol": 0.32},
@@ -117,6 +121,7 @@ def get_clean_universe():
         {"cat": "Taiwan", "name": "Realtek Semiconductor", "tk": "2379.TW", "cur": "TWD", "p": 485.00, "ind": "Networking Components", "geo": "Taiwan", "vol": 0.34},
         {"cat": "Taiwan", "name": "Alchip Technologies", "tk": "3661.TW", "cur": "TWD", "p": 2450.00, "ind": "Networking / ASICs", "geo": "Taiwan", "vol": 0.55},
         {"cat": "Taiwan", "name": "ASE Technology Holding", "tk": "ASX", "cur": "USD", "p": 14.50, "ind": "Advanced Packaging", "geo": "Taiwan", "vol": 0.29},
+        # Japan
         {"cat": "Japan", "name": "Tokyo Electron", "tk": "8035.T", "cur": "JPY", "p": 24500.00, "ind": "Wafer Fab Equipment", "geo": "Japan", "vol": 0.36},
         {"cat": "Japan", "name": "Advantest Corp.", "tk": "6857.T", "cur": "JPY", "p": 5800.00, "ind": "Process Diagnostics", "geo": "Japan", "vol": 0.39},
         {"cat": "Japan", "name": "Disco Corp.", "tk": "6146.T", "cur": "JPY", "p": 41200.00, "ind": "Wafer Fab Equipment", "geo": "Japan", "vol": 0.41},
@@ -127,10 +132,13 @@ def get_clean_universe():
         {"cat": "Japan", "name": "Renesas Electronics", "tk": "6723.T", "cur": "JPY", "p": 2450.00, "ind": "Embedded Chips", "geo": "Japan", "vol": 0.32},
         {"cat": "Japan", "name": "Ibiden Co.", "tk": "4062.T", "cur": "JPY", "p": 4800.00, "ind": "Advanced Packaging", "geo": "Japan", "vol": 0.33},
         {"cat": "Japan", "name": "ROHM Co.", "tk": "6963.T", "cur": "JPY", "p": 1850.00, "ind": "Analog Power Node", "geo": "Japan", "vol": 0.29},
+        # South Korea
         {"cat": "South Korea", "name": "Samsung Electronics", "tk": "005930.KS", "cur": "KRW", "p": 68500.00, "ind": "IDM Conglomerate", "geo": "South Korea", "vol": 0.31},
         {"cat": "South Korea", "name": "SK Hynix", "tk": "000660.KS", "cur": "KRW", "p": 165000.00, "ind": "Memory (HBM / DRAM)", "geo": "South Korea", "vol": 0.42},
+        # Europe
         {"cat": "Europe", "name": "ASML Holding N.V.", "tk": "ASML", "cur": "EUR", "p": 820.10, "ind": "Lithography Equipment", "geo": "Netherlands", "vol": 0.28},
         {"cat": "Europe", "name": "NXP Semiconductors", "tk": "NXPI", "cur": "USD", "p": 265.22, "ind": "Embedded Chips", "geo": "Netherlands", "vol": 0.26},
+
 
             
 
