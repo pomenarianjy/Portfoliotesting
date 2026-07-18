@@ -10,10 +10,10 @@ except ModuleNotFoundError:
     st.error("🔧 ENVIRONMENT ERROR: Add 'yfinance' to your requirements.txt file.")
     st.stop()
 
-# 1. CORE VISUAL WINDOW SETUP
+# 1. CORE VISUAL WINDOW PROPERTIES
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED METADATA MATRIX FOR LIVE FETCHING (ALL 48 KEY TECHNOLOGY STOCKS)
+# 2. DEFINITIVE SEED MATRIX (ALL 48 KEY GLOBAL TECHNOLOGY ASSETS RESTORED)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -37,16 +37,16 @@ def get_definitive_global_universe():
         {"ticker": "TXN", "name": "Texas Instruments", "category": "SOXX Top 15 Holdings", "def_price": 178.60, "def_r": 0.142, "def_v": 0.23, "currency": "USD"},
         {"ticker": "MRVL", "name": "Marvell Technology", "category": "SOXX Top 15 Holdings", "def_price": 68.20, "def_r": 0.201, "def_v": 0.41, "currency": "USD"},
         {"ticker": "QCOM", "name": "Qualcomm Inc.", "category": "SOXX Top 15 Holdings", "def_price": 168.20, "def_r": 0.185, "def_v": 0.35, "currency": "USD"},
-        {"ticker": "MPWR", "name": "Monolithic Power Systems", "category": "SOXX Top 15 Holdings", "def_price": 720.40, "def_r": 0.312, "def_v": 0.33, "currency": "USD"},
-        {"ticker": "NXPI", "name": "NXP Semiconductors N.V.", "category": "SOXX Top 15 Holdings", "def_price": 265.22, "def_r": 0.161, "def_v": 0.26, "currency": "USD"},
-        {"ticker": "ADI", "name": "Analog Devices, Inc.", "category": "SOXX Top 15 Holdings", "def_price": 210.50, "def_r": 0.164, "def_v": 0.25, "currency": "USD"},
+        {"ticker": "MPWR", "name": "Monolithic Power", "category": "SOXX Top 15 Holdings", "def_price": 720.40, "def_r": 0.312, "def_v": 0.33, "currency": "USD"},
+        {"ticker": "NXPI", "name": "NXP Semiconductors", "category": "SOXX Top 15 Holdings", "def_price": 265.22, "def_r": 0.161, "def_v": 0.26, "currency": "USD"},
+        {"ticker": "ADI", "name": "Analog Devices Inc.", "category": "SOXX Top 15 Holdings", "def_price": 210.50, "def_r": 0.164, "def_v": 0.25, "currency": "USD"},
         
         # --- Taiwan ---
         {"ticker": "TSM", "name": "TSMC", "category": "Taiwan", "def_price": 178.20, "def_r": 0.261, "def_v": 0.33, "currency": "USD"},
         {"ticker": "UMC", "name": "United Microelectronics", "category": "Taiwan", "def_price": 7.80, "def_r": 0.114, "def_v": 0.36, "currency": "USD"},
         {"ticker": "5347.TW", "name": "Vanguard International", "category": "Taiwan", "def_price": 112.50, "def_r": 0.095, "def_v": 0.32, "currency": "TWD"},
         {"ticker": "2454.TW", "name": "MediaTek Inc.", "category": "Taiwan", "def_price": 1240.00, "def_r": 0.184, "def_v": 0.38, "currency": "TWD"},
-        {"ticker": "3034.TW", "name": "Novatek Microelectronics", "category": "Taiwan", "def_price": 510.00, "def_r": 0.141, "def_v": 0.30, "currency": "TWD"},
+        {"ticker": "3034.TW", "name": "Novatek Micro", "category": "Taiwan", "def_price": 510.00, "def_r": 0.141, "def_v": 0.30, "currency": "TWD"},
         {"ticker": "2379.TW", "name": "Realtek Semiconductor", "category": "Taiwan", "def_price": 485.00, "def_r": 0.162, "def_v": 0.34, "currency": "TWD"},
         {"ticker": "3661.TW", "name": "Alchip Technologies", "category": "Taiwan", "def_price": 2450.00, "def_r": 0.412, "def_v": 0.55, "currency": "TWD"},
         {"ticker": "ASX", "name": "ASE Technology Holding", "category": "Taiwan", "def_price": 14.50, "def_r": 0.124, "def_v": 0.29, "currency": "USD"},
@@ -73,10 +73,10 @@ def get_definitive_global_universe():
         
         # --- HKEX / China Nodes ---
         {"ticker": "0981.HK", "name": "SMIC", "category": "HKEX / China Nodes", "def_price": 22.40, "def_r": 0.125, "def_v": 0.45, "currency": "HKD"},
-        {"ticker": "1347.HK", "name": "Hua Hong Semiconductor", "category": "HKEX / China Nodes", "def_price": 18.50, "def_r": 0.091, "def_v": 0.41, "currency": "HKD"},
-        {"ticker": "1385.HK", "name": "Shanghai Fudan Microelectronics", "category": "HKEX / China Nodes", "def_price": 14.20, "def_r": 0.154, "def_v": 0.48, "currency": "HKD"},
-        {"ticker": "2577.HK", "name": "InnoScience Technology", "category": "HKEX / China Nodes", "def_price": 8.50, "def_r": 0.050, "def_v": 0.50, "currency": "HKD"},
-        {"ticker": "6082.HK", "name": "Shanghai Biren Technology", "category": "HKEX / China Nodes", "def_price": 12.10, "def_r": 0.060, "def_v": 0.55, "currency": "HKD"},
+        {"ticker": "1347.HK", "name": "Hua Hong Semi", "category": "HKEX / China Nodes", "def_price": 18.50, "def_r": 0.091, "def_v": 0.41, "currency": "HKD"},
+        {"ticker": "1385.HK", "name": "Shanghai Fudan Micro", "category": "HKEX / China Nodes", "def_price": 14.20, "def_r": 0.154, "def_v": 0.48, "currency": "HKD"},
+        {"ticker": "2577.HK", "name": "InnoScience Tech", "category": "HKEX / China Nodes", "def_price": 8.50, "def_r": 0.050, "def_v": 0.50, "currency": "HKD"},
+        {"ticker": "6082.HK", "name": "Shanghai Biren Tech", "category": "HKEX / China Nodes", "def_price": 12.10, "def_r": 0.060, "def_v": 0.55, "currency": "HKD"},
         {"ticker": "9903.HK", "name": "Shanghai Iluvatar CoreX", "category": "HKEX / China Nodes", "def_price": 9.40, "def_r": 0.045, "def_v": 0.58, "currency": "HKD"}
     ]
     return assets_data
@@ -108,7 +108,7 @@ def load_live_market_data():
         enriched_data.append(enriched_item)
     return enriched_data
 
-with st.spinner("Streaming live ticker parameters across all global tech sectors..."):
+with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
     LIVE_DATA = load_live_market_data()
 
 # 3. GLOBAL APPLICATION INTERACTIVE STATE STORE ENGINE
@@ -116,5 +116,7 @@ if "focused_key" not in st.session_state:
     st.session_state.focused_key = "NVDA"
 
 if "portfolio_weights" not in st.session_state:
+    st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in LIVE_DATA}
+
 
 
