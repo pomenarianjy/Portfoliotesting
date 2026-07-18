@@ -1,10 +1,10 @@
 import streamlit as st
 import numpy as np
 
-# 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Portfolio Testing Panel")
+# 1. VISUAL WORKSPACE AND LAYOUT CANVAS CONFIGURATION
+st.set_page_config(layout="wide", page_title="Global Foundry Core Panel")
 
-# 2. RAW FIXED DATASET MATRIX (ALL 48 GLOBAL SEMICONDUCTOR ASSETS)
+# 2. STRUCTURAL DATA UNIVERSE Matrix
 RAW_DATA = [
     {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "price": 135.50, "ann_10y": 0.452, "vol": 0.44, "industry": "AI Compute / GPUs", "geo": "USA"},
     {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "price": 420.10, "ann_10y": 0.245, "vol": 0.22, "industry": "Enterprise Software / Cloud", "geo": "USA"},
@@ -27,29 +27,129 @@ RAW_DATA = [
     {"category": "SOXX Top 15 Holdings", "name": "NXP Semiconductors N.V.", "ticker": "NXPI", "currency": "USD", "price": 265.22, "ann_10y": 0.161, "vol": 0.26, "industry": "Analog Nodes / Embedded Chips", "geo": "Netherlands"},
     {"category": "SOXX Top 15 Holdings", "name": "Analog Devices, Inc.", "ticker": "ADI", "currency": "USD", "price": 210.50, "ann_10y": 0.164, "vol": 0.25, "industry": "Analog Nodes / Signal Processing", "geo": "USA"},
     {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "price": 178.20, "ann_10y": 0.261, "vol": 0.33, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "price": 7.80, "ann_10y": 0.114, "vol": 0.36, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "Vanguard International", "ticker": "5347.TW", "currency": "TWD", "price": 112.50, "ann_10y": 0.095, "vol": 0.32, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "MediaTek", "ticker": "2454.TW", "currency": "TWD", "price": 1240.00, "ann_10y": 0.184, "vol": 0.38, "industry": "Mobile Wireless Edge", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "Novatek Microelectronics", "ticker": "3034.TW", "currency": "TWD", "price": 510.00, "ann_10y": 0.141, "vol": 0.30, "industry": "Display Driver ICs", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "Realtek Semiconductor", "ticker": "2379.TW", "currency": "TWD", "price": 485.00, "ann_10y": 0.162, "vol": 0.34, "industry": "Networking / Infrastructure", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "Alchip Technologies", "ticker": "3661.TW", "currency": "TWD", "price": 2450.00, "ann_10y": 0.412, "vol": 0.55, "industry": "Networking / ASICs", "geo": "Taiwan"},
-    {"category": "Taiwan", "name": "ASE Technology Holding", "ticker": "ASX", "currency": "USD", "price": 14.50, "ann_10y": 0.124, "vol": 0.29, "industry": "Advanced Node OSAT packaging", "geo": "Taiwan"},
-    {"category": "Japan", "name": "Tokyo Electron", "ticker": "8035.T", "currency": "JPY", "price": 24500.00, "ann_10y": 0.231, "vol": 0.36, "industry": "Wafer Fab Equipment", "geo": "Japan"},
-    {"category": "Japan", "name": "Advantest Corp.", "ticker": "6857.T", "currency": "JPY", "price": 5800.00, "ann_10y": 0.252, "vol": 0.39, "industry": "Process Diagnostics Equipment", "geo": "Japan"},
-    {"category": "Japan", "name": "Disco Corp.", "ticker": "6146.T", "currency": "JPY", "price": 41200.00, "ann_10y": 0.342, "vol": 0.41, "industry": "Wafer Fab Equipment", "geo": "Japan"},
-    {"category": "Japan", "name": "Lasertec Corp.", "ticker": "6920.T", "currency": "JPY", "price": 22400.00, "ann_10y": 0.485, "vol": 0.48, "industry": "Process Diagnostics Equipment", "geo": "Japan"},
-    {"category": "Japan", "name": "SCREEN Holdings", "ticker": "7735.T", "currency": "JPY", "price": 9800.00, "ann_10y": 0.221, "vol": 0.38, "industry": "Wafer Fab Equipment", "geo": "Japan"},
-    {"category": "Japan", "name": "Kokusai Electric", "ticker": "6525.T", "currency": "JPY", "price": 3100.00, "ann_10y": 0.165, "vol": 0.35, "industry": "Wafer Fab Equipment", "geo": "Japan"},
-    {"category": "Japan", "name": "Kioxia Holdings", "ticker": "285A.T", "currency": "JPY", "price": 2850.00, "ann_10y": 0.112, "vol": 0.43, "industry": "Memory (HBM / DRAM)", "geo": "Japan"},
-    {"category": "Japan", "name": "Renesas Electronics", "ticker": "6723.T", "currency": "JPY", "price": 2450.00, "ann_10y": 0.154, "vol": 0.32, "industry": "Analog Nodes / Embedded Chips", "geo": "Japan"},
-    {"category": "Japan", "name": "Ibiden Co.", "ticker": "4062.T", "currency": "JPY", "price": 4800.00, "ann_10y": 0.132, "vol": 0.33, "industry": "Advanced Node OSAT packaging", "geo": "Japan"},
-    {"category": "Japan", "name": "ROHM Co.", "ticker": "6963.T", "currency": "JPY", "price": 1850.00, "ann_10y": 0.084, "vol": 0.29, "industry": "Analog Nodes / Power Systems", "geo": "Japan"},
-    {"category": "South Korea", "name": "Samsung Electronics", "ticker": "005930.KS", "currency": "KRW", "price": 68500.00, "ann_10y": 0.112, "vol": 0.31, "industry": "IDM Conglomerate", "geo": "South Korea"},
-    {"category": "South Korea", "name": "SK Hynix", "ticker": "000660.KS", "currency": "KRW", "price": 165000.00, "ann_10y": 0.214, "vol": 0.42, "industry": "Memory (HBM / DRAM)", "geo": "South Korea"},
-    {"category": "Europe", "name": "ASML Holding N.V.", "ticker": "ASML", "currency": "EUR", "price": 820.10, "ann_10y": 0.225, "vol": 0.28, "industry": "Lithography Equipment", "geo": "Netherlands"},
-    {"category": "Europe", "name": "Infineon Technologies", "ticker": "IFX", "currency": "EUR", "price": 34.20, "ann_10y": 0.145, "vol": 0.33, "industry": "Analog Nodes / Power Systems", "geo": "Germany"},
-    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "SMIC", "ticker": "0981.HK", "currency": "HKD", "price": 22.40, "ann_10y": 0.125, "vol": 0.45, "industry": "Pure-Play Foundry", "geo": "China"},
-    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Hua Hong Semiconductor", "ticker": "1347.HK", "currency": "HKD", "price": 18.50, "ann_10y": 0.091, "vol": 0.41, "industry": "Pure-Play Foundry", "geo": "China"},
-    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Shanghai Fudan Micro", "ticker": "1385.HK", "currency": "HKD", "price": 14.20, "ann_10y": 0.154, "vol": 0.48, "industry": "Analog Nodes / Embedded Chips", "geo": "China"},
-    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "InnoScience Technology", "ticker": "2577.HK", "currency": "HKD", "price": 8.50, "ann_10y": 0.050, "vol": 0.50, "industry": "Analog Nodes / Power Systems", "geo": "China"},
-    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Shanghai Biren Technology", "ticker": "6082.HK", "currency": "HKD", "price": 12.10, "ann_10y": 0.060, "vol": 0.55, "industry": "AI Compute / GPUs", "geo": "China"},
+    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "price": 7.80, "ann_10y": 0.114, "vol": 0.36, "industry": "Pure-Play Foundry", "geo": "Taiwan"}
+]
+
+# 3. CONTEXT STATE MANAGEMENT
+if "focused_key" not in st.session_state:
+    st.session_state.focused_key = "NVDA"
+
+if "portfolio_weights" not in st.session_state:
+    st.session_state.portfolio_weights = {str(item["ticker"]): 0 for item in RAW_DATA}
+
+st.title("📊 PORTFOLIO TESTING PANEL")
+
+panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
+
+with panel_left:
+    st.subheader("📂 Register Matrix")
+    
+    categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan"]
+    selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
+    
+    ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
+    ch1.markdown("**TICK**")
+    ch2.markdown("**STOCK ASSET LIST**")
+    ch3.markdown("**ALLOCATION %**")
+    ch4.markdown("**PRICE**")
+    
+    for idx, item in enumerate(RAW_DATA):
+        if selected_cat != "All" and item["category"] != selected_cat:
+            continue
+            
+        r1, r2, r3, r4 = st.columns([0.6, 2.4, 1.2, 1.2])
+        ticker = str(item["ticker"])
+        name = str(item["name"])
+        
+        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_v3_{ticker}_{idx}", label_visibility="collapsed")
+        
+        # FIXED: Safe, reactive rerun structure configuration
+        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_v3_{ticker}_{idx}"):
+            st.session_state.focused_key = ticker
+            st.rerun()
+            
+        if is_checked:
+            old_val = st.session_state.portfolio_weights[ticker]
+            initial_val = int(old_val) if old_val > 0 else 0
+            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_v3_{ticker}_{idx}", label_visibility="collapsed")
+            st.session_state.portfolio_weights[ticker] = new_alloc
+        else:
+            st.session_state.portfolio_weights[ticker] = 0
+            r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
+            
+        r4.write(f"{item['currency']} {item['price']:,.2f}")
+
+    st.write("")
+    
+    current_sum = sum(st.session_state.portfolio_weights.values())
+    if current_sum == 100:
+        st.success(f"🎯 READY TO EXECUTE: TOTAL SUM IS {current_sum}%")
+    else:
+        st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
+        
+    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=[2016, 2017, 2018, 2019, 2020, 2021, 2022], index=4)
+    execute_backtest = st.button("🔴 RUN BACKTEST 🔴", use_container_width=True)
+
+with panel_right:
+    focus_ticker = st.session_state.focused_key
+    
+    target_record = None
+    for item in RAW_DATA:
+        if item["ticker"] == focus_ticker:
+            target_record = item
+            break
+            
+    if target_record is not None:
+        st.subheader(f"📊 Data Profile: {target_record['ticker']}")
+        st.text(f"{target_record['name']} ({target_record['category']})")
+        st.markdown("---")
+        
+        met1, met2 = st.columns(2)
+        met1.metric("LAST PRICE", f"{target_record['currency']} {target_record['price']:,.2f}")
+        met2.metric("10Y COMP. RATE", f"{target_record['ann_10y']*100:.1f}%")
+        
+        st.markdown("---")
+        st.subheader("🔬 Core Metadata Telemetry")
+        st.write(f"- **Primary Domain Sector:** {target_record['industry']}")
+        st.write(f"- **Geographic Processing Matrix:** {target_record['geo']}")
+    else:
+        st.write("Select an active asset to load data parameters.")
+
+# 4. MATH SIMULATION PERFORMANCE EXECUTION MATRIX
+if execute_backtest:
+    total_alloc = sum(st.session_state.portfolio_weights.values())
+    if total_alloc != 100:
+        st.error(f"❌ COMPLIANCE REJECTION: Allocation must total exactly 100%. Current sum: {total_alloc}%")
+    else:
+        st.markdown("---")
+        st.subheader("🎯 Backtest Performance Simulation Results")
+        
+        table_summary = []
+        current_year = 2026
+        years_elapsed = current_year - entry_year
+        
+        for ticker, weight in st.session_state.portfolio_weights.items():
+            if weight <= 0:
+                continue
+                
+            asset_data = None
+            for item in RAW_DATA:
+                if item["ticker"] == ticker:
+                    asset_data = item
+                    break
+                    
+            if asset_data is not None:
+                r = float(asset_data['ann_10y'])
+                v = float(asset_data['vol'])
+                
+                growth_factor = np.exp((r - 0.5 * (v**2)) * years_elapsed)
+                allocated_base = 100000 * (weight / 100.0)
+                final_v = allocated_base * growth_factor
+                perf_pct = (growth_factor - 1.0) * 100
+                
+                table_summary.append({
+                    "Asset Ticker": ticker,
+                    "Allocation Weight": f"{weight}%",
+                    "Principal Base": f"${allocated_base:,.2f}",
+                    f"Terminal Value ({current_year})": f"${final_v:,.2f}",
+                    "Absolute Performance": f"{perf_pct:+.1f}%"
