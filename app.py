@@ -36,7 +36,7 @@ style_html = (
     "div[data-testid='stMetricValue'] > div {"
     "    font-family: 'Press Start 2P', cursive !important;"
     "    color: #FFFFFF !important;"
-    "    font-size: 20px !important;"
+    "    font-size: 18px !important;"
     "}"
     "div[data-testid='stMetricLabel'] > div > p {"
     "    color: #8C8C8C !important;"
@@ -67,8 +67,8 @@ style_html = (
     "    border: 4px solid #FFFFFF !important;"
     "    box-shadow: 5px 5px 0px #000000 !important;"
     "    border-radius: 0px !important;"
-    "    font-size: 12px !important;"
-    "    padding: 10px 20px !important;"
+    "    font-size: 11px !important;"
+    "    padding: 8px 16px !important;"
     "    width: 100%;"
     "}"
     "div.stButton > button:hover {"
@@ -87,57 +87,111 @@ style_html = (
 )
 st.components.v1.html(style_html, height=0, width=0)
 
-# 2. SEED SYSTEM INSTITUTIONAL DATASET (ALL 42 RECONSTRUCTED ASSETS DETAILED ACCURATELY)
+# 2. FIXED DATA PIPELINE DEPLOYMENT (Clean explicit tracking matrices)
 @st.cache_data
 def get_clean_universe():
-    raw_assets = [
-        # Magnificent Seven
-        {"cat": "Magnificent Seven", "name": "Nvidia Corp.", "tk": "NVDA", "cur": "USD", "p": 135.50, "ind": "AI Compute / GPUs", "geo": "USA", "vol": 0.44},
-        {"cat": "Magnificent Seven", "name": "Microsoft Corp.", "tk": "MSFT", "cur": "USD", "p": 420.10, "ind": "Enterprise Software", "geo": "USA", "vol": 0.22},
-        {"cat": "Magnificent Seven", "name": "Apple Inc.", "tk": "AAPL", "cur": "USD", "p": 225.40, "ind": "Consumer Hardware", "geo": "USA", "vol": 0.20},
-        {"cat": "Magnificent Seven", "name": "Alphabet Inc.", "tk": "GOOGL", "cur": "USD", "p": 175.60, "ind": "Digital Advertising", "geo": "USA", "vol": 0.24},
-        {"cat": "Magnificent Seven", "name": "Amazon.com Inc.", "tk": "AMZN", "cur": "USD", "p": 185.30, "ind": "Cloud Infrastructure", "geo": "USA", "vol": 0.28},
-        {"cat": "Magnificent Seven", "name": "Meta Platforms Inc.", "tk": "META", "cur": "USD", "p": 495.20, "ind": "Digital Advertising", "geo": "USA", "vol": 0.36},
-        {"cat": "Magnificent Seven", "name": "Tesla Inc.", "tk": "TSLA", "cur": "USD", "p": 210.50, "ind": "Automotive / Energy", "geo": "USA", "vol": 0.52},
-        # SOXX Top 15 Holdings
-        {"cat": "SOXX Top 15 Holdings", "name": "Advanced Micro Devices", "tk": "AMD", "cur": "USD", "p": 154.40, "ind": "AI Compute / CPUs", "geo": "USA", "vol": 0.42},
-        {"cat": "SOXX Top 15 Holdings", "name": "Micron Technology", "tk": "MU", "cur": "USD", "p": 94.50, "ind": "Memory (HBM / DRAM)", "geo": "USA", "vol": 0.49},
-        {"cat": "SOXX Top 15 Holdings", "name": "Broadcom Inc.", "tk": "AVGO", "cur": "USD", "p": 164.80, "ind": "Networking / ASICs", "geo": "USA", "vol": 0.27},
-        {"cat": "SOXX Top 15 Holdings", "name": "Applied Materials Inc.", "tk": "AMAT", "cur": "USD", "p": 192.40, "ind": "Wafer Fab Equipment", "geo": "USA", "vol": 0.34},
-        {"cat": "SOXX Top 15 Holdings", "name": "Intel Corporation", "tk": "INTC", "cur": "USD", "p": 28.10, "ind": "IDM Foundry", "geo": "USA", "vol": 0.39},
-        {"cat": "SOXX Top 15 Holdings", "name": "KLA Corporation", "tk": "KLAC", "cur": "USD", "p": 685.20, "ind": "Process Diagnostics", "geo": "USA", "vol": 0.31},
-        {"cat": "SOXX Top 15 Holdings", "name": "Lam Research Corp.", "tk": "LRCX", "cur": "USD", "p": 842.50, "ind": "Wafer Fab Equipment", "geo": "USA", "vol": 0.37},
-        {"cat": "SOXX Top 15 Holdings", "name": "Texas Instruments Inc.", "tk": "TXN", "cur": "USD", "p": 178.60, "ind": "Analog Nodes", "geo": "USA", "vol": 0.23},
-        {"cat": "SOXX Top 15 Holdings", "name": "Marvell Technology", "tk": "MRVL", "cur": "USD", "p": 68.20, "ind": "Networking Modules", "geo": "USA", "vol": 0.41},
-        {"cat": "SOXX Top 15 Holdings", "name": "Qualcomm Inc.", "tk": "QCOM", "cur": "USD", "p": 168.20, "ind": "Mobile Wireless Edge", "geo": "USA", "vol": 0.35},
-        {"cat": "SOXX Top 15 Holdings", "name": "Monolithic Power Systems", "tk": "MPWR", "cur": "USD", "p": 720.40, "ind": "Analog Power Node", "geo": "USA", "vol": 0.33},
-        {"cat": "SOXX Top 15 Holdings", "name": "Analog Devices Inc.", "tk": "ADI", "cur": "USD", "p": 210.50, "ind": "Analog Power Node", "geo": "USA", "vol": 0.25},
-        # Taiwan
-        {"cat": "Taiwan", "name": "TSMC", "tk": "TSM", "cur": "USD", "p": 178.20, "ind": "Pure-Play Foundry", "geo": "Taiwan", "vol": 0.33},
-        {"cat": "Taiwan", "name": "United Microelectronics", "tk": "UMC", "cur": "USD", "p": 7.80, "ind": "Pure-Play Foundry", "geo": "Taiwan", "vol": 0.36},
-        {"cat": "Taiwan", "name": "Vanguard International", "tk": "5347.TW", "cur": "TWD", "p": 112.50, "ind": "Pure-Play Foundry", "geo": "Taiwan", "vol": 0.32},
-        {"cat": "Taiwan", "name": "MediaTek", "tk": "2454.TW", "cur": "TWD", "p": 1240.00, "ind": "Mobile Wireless Edge", "geo": "Taiwan", "vol": 0.38},
-        {"cat": "Taiwan", "name": "Novatek Microelectronics", "tk": "3034.TW", "cur": "TWD", "p": 510.00, "ind": "Display Drivers", "geo": "Taiwan", "vol": 0.30},
-        {"cat": "Taiwan", "name": "Realtek Semiconductor", "tk": "2379.TW", "cur": "TWD", "p": 485.00, "ind": "Networking Components", "geo": "Taiwan", "vol": 0.34},
-        {"cat": "Taiwan", "name": "Alchip Technologies", "tk": "3661.TW", "cur": "TWD", "p": 2450.00, "ind": "Networking / ASICs", "geo": "Taiwan", "vol": 0.55},
-        {"cat": "Taiwan", "name": "ASE Technology Holding", "tk": "ASX", "cur": "USD", "p": 14.50, "ind": "Advanced Packaging", "geo": "Taiwan", "vol": 0.29},
-        # Japan
-        {"cat": "Japan", "name": "Tokyo Electron", "tk": "8035.T", "cur": "JPY", "p": 24500.00, "ind": "Wafer Fab Equipment", "geo": "Japan", "vol": 0.36},
-        {"cat": "Japan", "name": "Advantest Corp.", "tk": "6857.T", "cur": "JPY", "p": 5800.00, "ind": "Process Diagnostics", "geo": "Japan", "vol": 0.39},
-        {"cat": "Japan", "name": "Disco Corp.", "tk": "6146.T", "cur": "JPY", "p": 41200.00, "ind": "Wafer Fab Equipment", "geo": "Japan", "vol": 0.41},
-        {"cat": "Japan", "name": "Lasertec Corp.", "tk": "6920.T", "cur": "JPY", "p": 22400.00, "ind": "Process Diagnostics", "geo": "Japan", "vol": 0.48},
-        {"cat": "Japan", "name": "SCREEN Holdings", "tk": "7735.T", "cur": "JPY", "p": 9800.00, "ind": "Wafer Fab Equipment", "geo": "Japan", "vol": 0.38},
-        {"cat": "Japan", "name": "Kokusai Electric", "tk": "6525.T", "cur": "JPY", "p": 3100.00, "ind": "Wafer Fab Equipment", "geo": "Japan", "vol": 0.35},
-        {"cat": "Japan", "name": "Kioxia Holdings", "tk": "285A.T", "cur": "JPY", "p": 2850.00, "ind": "Memory (HBM / DRAM)", "geo": "Japan", "vol": 0.43},
-        {"cat": "Japan", "name": "Renesas Electronics", "tk": "6723.T", "cur": "JPY", "p": 2450.00, "ind": "Embedded Chips", "geo": "Japan", "vol": 0.32},
-        {"cat": "Japan", "name": "Ibiden Co.", "tk": "4062.T", "cur": "JPY", "p": 4800.00, "ind": "Advanced Packaging", "geo": "Japan", "vol": 0.33},
-        {"cat": "Japan", "name": "ROHM Co.", "tk": "6963.T", "cur": "JPY", "p": 1850.00, "ind": "Analog Power Node", "geo": "Japan", "vol": 0.29},
-        # South Korea
-        {"cat": "South Korea", "name": "Samsung Electronics", "tk": "005930.KS", "cur": "KRW", "p": 68500.00, "ind": "IDM Conglomerate", "geo": "South Korea", "vol": 0.31},
-        {"cat": "South Korea", "name": "SK Hynix", "tk": "000660.KS", "cur": "KRW", "p": 165000.00, "ind": "Memory (HBM / DRAM)", "geo": "South Korea", "vol": 0.42},
-        # Europe
-        {"cat": "Europe", "name": "ASML Holding N.V.", "tk": "ASML", "cur": "EUR", "p": 820.10, "ind": "Lithography Equipment", "geo": "Netherlands", "vol": 0.28},
-        {"cat": "Europe", "name": "NXP Semiconductors", "tk": "NXPI", "cur": "USD", "p": 265.22, "ind": "Embedded Chips", "geo": "Netherlands", "vol": 0.26},
+    raw_lines = [
+        "Magnificent Seven|Nvidia Corp.|NVDA|USD|135.50|AI Compute / GPUs|USA|0.44",
+        "Magnificent Seven|Microsoft Corp.|MSFT|USD|420.10|Enterprise Software|USA|0.22",
+        "Magnificent Seven|Apple Inc.|AAPL|USD|225.40|Consumer Hardware|USA|0.20",
+        "Magnificent Seven|Alphabet Inc.|GOOGL|USD|175.60|Digital Advertising|USA|0.24",
+        "Magnificent Seven|Amazon.com Inc.|AMZN|USD|185.30|Cloud Infrastructure|USA|0.28",
+        "Magnificent Seven|Meta Platforms Inc.|META|USD|495.20|Digital Advertising|USA|0.36",
+        "Magnificent Seven|Tesla Inc.|TSLA|USD|210.50|Automotive / Energy|USA|0.52",
+        "SOXX Top 15 Holdings|Advanced Micro Devices|AMD|USD|154.40|AI Compute / CPUs|USA|0.42",
+        "SOXX Top 15 Holdings|Micron Technology|MU|USD|94.50|Memory (HBM / DRAM)|USA|0.49",
+        "SOXX Top 15 Holdings|Broadcom Inc.|AVGO|USD|164.80|Networking / ASICs|USA|0.27",
+        "SOXX Top 15 Holdings|Applied Materials Inc.|AMAT|USD|192.40|Wafer Fab Equipment|USA|0.34",
+        "SOXX Top 15 Holdings|Intel Corporation|INTC|USD|28.10|IDM Foundry|USA|0.39",
+        "SOXX Top 15 Holdings|KLA Corporation|KLAC|USD|685.20|Process Diagnostics|USA|0.31",
+        "SOXX Top 15 Holdings|Lam Research Corp.|LRCX|USD|842.50|Wafer Fab Equipment|USA|0.37",
+        "SOXX Top 15 Holdings|Texas Instruments Inc.|TXN|USD|178.60|Analog Nodes|USA|0.23",
+        "SOXX Top 15 Holdings|Marvell Technology|MRVL|USD|68.20|Networking Modules|USA|0.41",
+        "SOXX Top 15 Holdings|Qualcomm Inc.|QCOM|USD|168.20|Mobile Wireless Edge|USA|0.35",
+        "SOXX Top 15 Holdings|Monolithic Power Systems|MPWR|USD|720.40|Analog Power Node|USA|0.33",
+        "SOXX Top 15 Holdings|Analog Devices Inc.|ADI|USD|210.50|Analog Power Node|USA|0.25",
+        "Taiwan|TSMC|TSM|USD|178.20|Pure-Play Foundry|Taiwan|0.33",
+        "Taiwan|United Microelectronics|UMC|USD|7.80|Pure-Play Foundry|Taiwan|0.36",
+        "Taiwan|Vanguard International|5347.TW|TWD|112.50|Pure-Play Foundry|Taiwan|0.32",
+        "Taiwan|MediaTek|2454.TW|TWD|1240.00|Mobile Wireless Edge|Taiwan|0.38",
+        "Taiwan|Novatek Microelectronics|3034.TW|TWD|510.00|Display Drivers|Taiwan|0.30",
+        "Taiwan|Realtek Semiconductor|2379.TW|TWD|485.00|Networking Components|Taiwan|0.34",
+        "Taiwan|Alchip Technologies|3661.TW|TWD|2450.00|Networking / ASICs|Taiwan|0.55",
+        "Taiwan|ASE Technology Holding|ASX|USD|14.50|Advanced Packaging|Taiwan|0.29",
+        "Japan|Tokyo Electron|8035.T|JPY|24500.00|Wafer Fab Equipment|Japan|0.36",
+        "Japan|Advantest Corp.|6857.T|JPY|5800.00|Process Diagnostics|Japan|0.39",
+        "Japan|Disco Corp.|6146.T|JPY|41200.00|Wafer Fab Equipment|Japan|0.41",
+        "Japan|Lasertec Corp.|6920.T|JPY|22400.00|Process Diagnostics|Japan|0.48",
+        "Japan|SCREEN Holdings|7735.T|JPY|9800.00|Wafer Fab Equipment|Japan|0.38",
+        "Japan|Kokusai Electric|6525.T|JPY|3100.00|Wafer Fab Equipment|Japan|0.35",
+        "Japan|Kioxia Holdings|285A.T|JPY|2850.00|Memory (HBM / DRAM)|Japan|0.43",
+        "Japan|Renesas Electronics|6723.T|JPY|2450.00|Embedded Chips|Japan|0.32",
+        "Japan|Ibiden Co.|4062.T|JPY|4800.00|Advanced Packaging|Japan|0.33",
+        "Japan|ROHM Co.|6963.T|JPY|1850.00|Analog Power Node|Japan|0.29",
+        "South Korea|Samsung Electronics|005930.KS|KRW|68500.00|IDM Conglomerate|South Korea|0.31",
+        "South Korea|SK Hynix|000660.KS|KRW|165000.00|Memory (HBM / DRAM)|South Korea|0.42",
+        "Europe|ASML Holding N.V.|ASML|EUR|820.10|Lithography Equipment|Netherlands|0.28",
+        "Europe|NXP Semiconductors|NXPI|USD|265.22|Embedded Chips|Netherlands|0.26",
+        "Europe|Infineon Technologies|IFX|EUR|34.20|Analog Power Node|Germany|0.33",
+        "Hong Kong Stock Exchange (HKEX)|SMIC|0981.HK|HKD|22.40|Pure-Play Foundry|China|0.45",
+        "Hong Kong Stock Exchange (HKEX)|Hua Hong Semiconductor|1347.HK|HKD|18.50|Pure-Play Foundry|China|0.41",
+        "Hong Kong Stock Exchange (HKEX)|Shanghai Fudan Micro|1385.HK|HKD|14.20|Embedded Chips|China|0.48",
+        "Hong Kong Stock Exchange (HKEX)|InnoScience Technology|2577.HK|HKD|8.50|Analog Power Node|China|0.50",
+        "Hong Kong Stock Exchange (HKEX)|Shanghai Biren Tech|6082.HK|HKD|12.10|AI Compute / GPUs|China|0.55",
+        "Hong Kong Stock Exchange (HKEX)|Shanghai Iluvatar CoreX|9903.HK|HKD|9.40|AI Compute / GPUs|China|0.58"
+    ]
+    compiled = []
+    for line in raw_lines:
+        p = line.split("|")
+        # FIXED: Removed broken shorthand brackets and mapped all slices explicitly to prevent compilation errors
+        compiled.append([
+            p[0], p[1], p[2], p[3], float(p[4]), 
+            0.145, 0.282, "420.5B", float(p[7]), p[5], p[6],
+            0.08, 0.34, 0.58, 0.32, "8.4B", "3.2B", 0.89, 0.92
+        ])
+    cols = ["category", "name", "ticker", "currency", "price", "ytd", "ann_10y", "mcap", "vol", "industry", "geo", "qoq_rev", "yoy_rev", "gross_margin", "op_margin", "fcf", "capex", "utilization", "yield_rate"]
+    return pd.DataFrame(compiled, columns=cols)
+
+df_universe = get_clean_universe()
+
+if "focused_key" not in st.session_state:
+    st.session_state.focused_key = "NVDA"
+
+# Maintain a persistent master ledger dictionary of user weights across re-renders
+if "portfolio_weights" not in st.session_state:
+    st.session_state.portfolio_weights = {row["ticker"]: 0 for idx, row in df_universe.iterrows()}
+
+st.markdown('<div class="retro-title">PORTFOLIO TESTING</div>', unsafe_html=True)
+st.markdown('<div class="retro-subtitle">A Single Family Office Front Page Terminal</div>', unsafe_html=True)
+
+# 3. SPLIT WORKSPACE INTERACTIVE PANELS
+panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
+
+with panel_left:
+    st.markdown("### 🕹️ TICKETING MATRIX REGISTER")
+    
+    categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "Hong Kong Stock Exchange (HKEX)"]
+    selected_cat = st.selectbox("📂 FILTER BY SECTOR OR REGION", options=categories, index=0)
+    
+    col_hdr1, col_hdr2, col_hdr3, col_hdr4 = st.columns([0.6, 2.4, 1.0, 1.0])
+    col_hdr1.markdown("**TICK**")
+    col_hdr2.markdown("**STOCK ASSET LIST**")
+    col_hdr3.markdown("**ALLOCATION %**")
+    col_hdr4.markdown("**PRICE**")
+    
+    # Render loop filtered based on group choice selection
+    for idx, row in df_universe.iterrows():
+        if selected_cat != "All" and row["category"] != selected_cat:
+            continue
+            
+        row_cols = st.columns([0.6, 2.4, 1.0, 1.0])
+        ticker = row["ticker"]
+        name = row["name"]
+        
+        # Checkbox states tracked independently
+        is_ticked = row_cols.checkbox("", value=(st.session_state.portfolio_weights[ticker] >= 0), key=f"cb_{ticker}_{idx}", label_visibility="collapsed")
+        
+
 
 
             
