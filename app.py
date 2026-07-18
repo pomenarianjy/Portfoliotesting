@@ -53,7 +53,7 @@ def fetch_live_market_data():
                     if fetched_r is not None and fetched_r != 0: ann_10y = float(fetched_r)
                     if fetched_v is not None and fetched_v != 0: vol = float(fetched_v) * 0.25
         except Exception:
-            pass # Use hardcoded fallbacks transparently if Yahoo is down or throttling
+            pass
             
         enriched_item = item.copy()
         enriched_item.update({"price": last_price, "ann_10y": ann_10y, "vol": vol})
@@ -192,6 +192,8 @@ if execute_backtest:
                 perf_pct = (growth_factor - 1.0) * 100
                 
                 table_summary.append({
+                    "Asset Ticker": ticker,
+
 
 
 
