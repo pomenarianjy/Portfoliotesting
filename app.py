@@ -1,10 +1,10 @@
 import streamlit as st
 import numpy as np
 
-# 1. VISUAL WORKSPACE AND LAYOUT CANVAS CONFIGURATION
+# 1. VISUAL WORKSPACE AND LAYOUT CANVAS MATRIX CONFIGURATION
 st.set_page_config(layout="wide", page_title="Global Foundry Core Panel")
 
-# 2. STRUCTURAL DATA UNIVERSE Matrix
+# 2. BULLETPROOF STRUCTURAL DATA UNIVERSE
 RAW_DATA = [
     {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "price": 135.50, "ann_10y": 0.452, "vol": 0.44, "industry": "AI Compute / GPUs", "geo": "USA"},
     {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "price": 420.10, "ann_10y": 0.245, "vol": 0.22, "industry": "Enterprise Software / Cloud", "geo": "USA"},
@@ -61,17 +61,16 @@ with panel_left:
         ticker = str(item["ticker"])
         name = str(item["name"])
         
-        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_v3_{ticker}_{idx}", label_visibility="collapsed")
+        is_checked = r1.checkbox("", value=(st.session_state.portfolio_weights[ticker] > 0), key=f"cb_v4_{ticker}_{idx}", label_visibility="collapsed")
         
-        # FIXED: Safe, reactive rerun structure configuration
-        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_v3_{ticker}_{idx}"):
+        if r2.button(f"🔗 {ticker} | {name[:18]}", key=f"lk_v4_{ticker}_{idx}"):
             st.session_state.focused_key = ticker
             st.rerun()
             
         if is_checked:
             old_val = st.session_state.portfolio_weights[ticker]
             initial_val = int(old_val) if old_val > 0 else 0
-            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_v3_{ticker}_{idx}", label_visibility="collapsed")
+            new_alloc = r3.number_input("", min_value=0, max_value=100, value=initial_val, step=5, key=f"al_v4_{ticker}_{idx}", label_visibility="collapsed")
             st.session_state.portfolio_weights[ticker] = new_alloc
         else:
             st.session_state.portfolio_weights[ticker] = 0
@@ -87,7 +86,8 @@ with panel_left:
     else:
         st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {current_sum}% / 100%")
         
-    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=[2016, 2017, 2018, 2019, 2020, 2021, 2022], index=4)
+    # FIXED: Fully enclosed array tracking configuration parameters
+    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=[2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], index=4)
     execute_backtest = st.button("🔴 RUN BACKTEST 🔴", use_container_width=True)
 
 with panel_right:
@@ -152,4 +152,4 @@ if execute_backtest:
                     "Allocation Weight": f"{weight}%",
                     "Principal Base": f"${allocated_base:,.2f}",
                     f"Terminal Value ({current_year})": f"${final_v:,.2f}",
-                    "Absolute Performance": f"{perf_pct:+.1f}%"
+
