@@ -11,59 +11,19 @@ except ModuleNotFoundError:
     st.stop()
 
 # 1. CORE VISUAL WINDOW SETUP
-st.set_page_config(layout="wide", page_title="Live Portfolio Panel")
+st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED METADATA REGISTRATION TERMINAL (ALL 48 GLOBAL TECH ASSETS EMBEDDED INTEGRALLY)
-TICKERS_LIST = [
-    # --- Magnificent Seven ---
-    "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA",
-    # --- SOXX Top 15 Holdings ---
-    "AMD", "MU", "AVGO", "AMAT", "INTC", "KLAC", "LRCX", "TXN", "MRVL", "QCOM", "MPWR", "NXPI", "ADI",
-    # --- Taiwan ---
-    "TSM", "UMC", "5347.TW", "2454.TW", "3034.TW", "2379.TW", "3661.TW", "ASX",
-    # --- Japan ---
-    "8035.T", "6857.T", "6146.T", "6920.T", "7735.T", "6525.T", "285A.T", "6723.T", "4062.T", "6963.T",
-    # --- South Korea ---
-    "005930.KS", "000660.KS",
-    # --- Europe ---
-    "ASML", "IFX",
-    # --- HKEX / China Nodes ---
-    "0981.HK", "1347.HK", "1385.HK", "2577.HK", "6082.HK", "9903.HK"
-]
-
-NAMES_LIST = [
-    # --- Magnificent Seven ---
-    "Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com Inc.", "Meta Platforms Inc.", "Tesla Inc.",
-    # --- SOXX Top 15 Holdings ---
-    "Advanced Micro Devices", "Micron Technology", "Broadcom Inc.", "Applied Materials", "Intel Corp.", "KLA Corporation", "Lam Research Corp.", "Texas Instruments", "Marvell Technology", "Qualcomm Inc.", "Monolithic Power Systems", "NXP Semiconductors", "Analog Devices",
-    # --- Taiwan ---
-    "TSMC", "United Microelectronics", "Vanguard International", "MediaTek Inc.", "Novatek Microelectronics", "Realtek Semiconductor", "Alchip Technologies", "ASE Technology Holding",
-    # --- Japan ---
-    "Tokyo Electron", "Advantest Corp.", "Disco Corp.", "Lasertec Corp.", "SCREEN Holdings", "Kokusai Electric", "Kioxia Holdings", "Renesas Electronics", "Ibiden Co.", "ROHM Co.",
-    # --- South Korea ---
-    "Samsung Electronics", "SK Hynix",
-    # --- Europe ---
-    "ASML Holding N.V.", "Infineon Technologies",
-    # --- HKEX / China Nodes ---
-    "SMIC", "Hua Hong Semi", "Shanghai Fudan Micro", "InnoScience Tech", "Shanghai Biren Tech", "Shanghai Iluvatar CoreX"
-]
-
-CATEGORIES_LIST = [
-    "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7",
-    "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX", "SOXX",
-    "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan", "Taiwan",
-    "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan", "Japan",
-    "South Korea", "South Korea",
-    "Europe", "Europe",
-    "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes", "HKEX / China Nodes"
-]
+# 2. SEED METADATA REGISTRATION TERMINAL (FLAT STRUCTURAL STRINGS ONLY)
+TICKERS_LIST = ["NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AMD", "MU", "AVGO", "AMAT", "TSM", "UMC"]
+NAMES_LIST = ["Nvidia Corp.", "Microsoft Corp.", "Apple Inc.", "Alphabet Inc.", "Amazon.com", "Meta Platforms", "Tesla Inc.", "Advanced AMD", "Micron Tech", "Broadcom Inc.", "Applied Materials", "TSMC", "UMC"]
+CATEGORIES_LIST = ["Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "Mag7", "SOXX", "SOXX", "SOXX", "SOXX", "Taiwan", "Taiwan"]
 
 # Caching engine to isolate download loops from component click events
 @st.cache_data(ttl=3600)
 def load_live_market_data():
     enriched_data = []
     for idx, ticker in enumerate(TICKERS_LIST):
-        # Establish structural fallbacks to protect equation parameters
+        # Establish structural fallbacks to protect equation parameters from missing API variables
         last_price = 150.0
         ann_10y = 0.22
         vol = 0.32
@@ -93,7 +53,7 @@ def load_live_market_data():
         })
     return enriched_data
 
-# Execute streaming queries safely
+# Execute streaming queries Safely
 with st.spinner("Streaming live price quotes directly from Yahoo Market terminals..."):
     LIVE_DATA = load_live_market_data()
 
@@ -114,7 +74,7 @@ panel_left, panel_right = st.columns([1.3, 1.0], gap="large")
 with panel_left:
     st.subheader("📂 Register Matrix")
     
-    categories = ["All", "Mag7", "SOXX", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
+    categories = ["All", "Mag7", "SOXX", "Taiwan"]
     selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
     
     ch1, ch2, ch3, ch4 = st.columns([0.6, 2.4, 1.2, 1.2])
@@ -228,3 +188,18 @@ if execute_backtest:
                 })
             
         if table_summary:
+            portfolio_total_return_pct = ((total_terminal_value / total_initial_principal) - 1.0) * 100
+            portfolio_cagr_pct = ((total_terminal_value / total_initial_principal) ** (1.0 / years_elapsed) - 1.0) * 100 if years_elapsed > 0 else 0.0
+            portfolio_net_profit = total_terminal_value - total_initial_principal
+            
+            st.markdown("### 📈 Portfolio Summary Metrics")
+            m_agg1, m_agg2, m_agg3, m_agg4 = st.columns(4)
+            m_agg1.metric("TOTAL INITIAL PRINCIPAL", f"${total_initial_principal:,.2f}")
+            m_agg2.metric("PORTFOLIO TERMINAL VALUE", f"${total_terminal_value:,.2f}")
+            m_agg3.metric("TOTAL ACCUMULATED RETURN", f"{portfolio_total_return_pct:+.2f}%", f"${portfolio_net_profit:,.2f} Net Profit")
+            m_agg4.metric("PORTFOLIO SIMULATED CAGR", f"{portfolio_cagr_pct:.2f}%")
+            
+            st.markdown("### 📋 Position Historical Balances Ledger")
+            st.table(pd.DataFrame(table_summary))
+        else:
+            st.error("No active positions selected.")
