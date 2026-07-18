@@ -2,184 +2,59 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# 1. EMULATE NATIVE LIGHT THEME SETTINGS (STRICT OVERRIDE)
-st.set_page_config(
-    layout="wide", 
-    page_title="Portfolio Panel",
-    initial_sidebar_state="collapsed"
-)
+# 1. VISUAL LAYOUT INITIALIZATION
+st.set_page_config(layout="wide", page_title="Portfolio Panel")
 
-# Completely strip dark-mode context by forcing browser variables to light values
-st.markdown("""
-    <style>
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMain"] {
-        background-color: #FFFFFF !important;
-        color: #111111 !important;
-    }
-    h1, h2, h3, h4, h5, h6, label, p, span, div, .stMarkdown {
-        color: #111111 !important;
-    }
-    input, button, select, div[data-baseweb="select"], div[data-baseweb="input"] {
-        background-color: #F8F9FA !important;
-        color: #111111 !important;
-        border: 1px solid #CCCCCC !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# 2. RAW UNIVERSE TEXT MATRICES
+# 2. RAW FIXED DATASET MATRIX (ALL 48 GLOBAL ASSETS MANUALLY PARSED)
 RAW_UNIVERSE = [
-    "Magnificent Seven|Nvidia Corp.|NVDA|USD|135.50|0.452|0.44|AI GPUs|USA",
-    "Magnificent Seven|Microsoft Corp.|MSFT|USD|420.10|0.245|0.22|Cloud Software|USA",
-    "Magnificent Seven|Apple Inc.|AAPL|USD|225.40|0.221|0.20|Hardware|USA",
-    "SOXX Holdings|Advanced Micro Devices|AMD|USD|154.40|0.315|0.42|AI Processors|USA",
-    "SOXX Holdings|Broadcom Inc.|AVGO|USD|164.80|0.294|0.27|ASICs/Networking|USA",
-    "Taiwan Foundry|TSMC|TSM|USD|178.20|0.261|0.33|Pure-Play Foundry|Taiwan",
-    "Taiwan Foundry|United Microelectronics|UMC|USD|7.80|0.114|0.36|Legacy Foundry|Taiwan"
-]
+    {"category": "Magnificent Seven", "name": "Nvidia Corp.", "ticker": "NVDA", "currency": "USD", "price": 135.50, "ann_10y": 0.452, "vol": 0.44, "industry": "AI Compute / GPUs", "geo": "USA"},
+    {"category": "Magnificent Seven", "name": "Microsoft Corp.", "ticker": "MSFT", "currency": "USD", "price": 420.10, "ann_10y": 0.245, "vol": 0.22, "industry": "Enterprise Software / Cloud", "geo": "USA"},
+    {"category": "Magnificent Seven", "name": "Apple Inc.", "ticker": "AAPL", "currency": "USD", "price": 225.40, "ann_10y": 0.221, "vol": 0.20, "industry": "Consumer Hardware / Mobile", "geo": "USA"},
+    {"category": "Magnificent Seven", "name": "Alphabet Inc.", "ticker": "GOOGL", "currency": "USD", "price": 175.60, "ann_10y": 0.195, "vol": 0.24, "industry": "Digital Advertising / AI", "geo": "USA"},
+    {"category": "Magnificent Seven", "name": "Amazon.com Inc.", "ticker": "AMZN", "currency": "USD", "price": 185.30, "ann_10y": 0.212, "vol": 0.28, "industry": "E-Commerce / Cloud Infrastructure", "geo": "USA"},
+    {"category": "Magnificent Seven", "name": "Meta Platforms Inc.", "ticker": "META", "currency": "USD", "price": 495.20, "ann_10y": 0.228, "vol": 0.36, "industry": "Digital Advertising / Metaverse", "geo": "USA"},
+    {"category": "Magnificent Seven", "name": "Tesla Inc.", "ticker": "TSLA", "currency": "USD", "price": 210.50, "ann_10y": 0.384, "vol": 0.52, "industry": "Automotive / Energy Storage", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Advanced Micro Devices", "ticker": "AMD", "currency": "USD", "price": 154.40, "ann_10y": 0.315, "vol": 0.42, "industry": "AI Compute / CPUs", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Micron Technology, Inc.", "ticker": "MU", "currency": "USD", "price": 94.50, "ann_10y": 0.198, "vol": 0.49, "industry": "Memory (HBM / DRAM)", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Broadcom Inc.", "ticker": "AVGO", "currency": "USD", "price": 164.80, "ann_10y": 0.294, "vol": 0.27, "industry": "Networking / ASICs", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Applied Materials, Inc.", "ticker": "AMAT", "currency": "USD", "price": 192.40, "ann_10y": 0.264, "vol": 0.34, "industry": "Wafer Fab Equipment", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Intel Corporation", "ticker": "INTC", "currency": "USD", "price": 28.10, "ann_10y": 0.012, "vol": 0.39, "industry": "IDM / Foundry Transition", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "KLA Corporation", "ticker": "KLAC", "currency": "USD", "price": 685.20, "ann_10y": 0.256, "vol": 0.31, "industry": "Process Diagnostics Equipment", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Lam Research Corp.", "ticker": "LRCX", "currency": "USD", "price": 842.50, "ann_10y": 0.284, "vol": 0.37, "industry": "Wafer Fab Equipment", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Texas Instruments Inc.", "ticker": "TXN", "currency": "USD", "price": 178.60, "ann_10y": 0.142, "vol": 0.23, "industry": "Analog Nodes / Embedded Chips", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Marvell Technology, Inc.", "ticker": "MRVL", "currency": "USD", "price": 68.20, "ann_10y": 0.201, "vol": 0.41, "industry": "Networking / Infrastructure", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Qualcomm Inc.", "ticker": "QCOM", "currency": "USD", "price": 168.20, "ann_10y": 0.185, "vol": 0.35, "industry": "Mobile Wireless Edge", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "Monolithic Power Systems", "ticker": "MPWR", "currency": "USD", "price": 720.40, "ann_10y": 0.312, "vol": 0.33, "industry": "Analog Nodes / Power Systems", "geo": "USA"},
+    {"category": "SOXX Top 15 Holdings", "name": "NXP Semiconductors N.V.", "ticker": "NXPI", "currency": "USD", "price": 265.22, "ann_10y": 0.161, "vol": 0.26, "industry": "Analog Nodes / Embedded Chips", "geo": "Netherlands"},
+    {"category": "SOXX Top 15 Holdings", "name": "Analog Devices, Inc.", "ticker": "ADI", "currency": "USD", "price": 210.50, "ann_10y": 0.164, "vol": 0.25, "industry": "Analog Nodes / Signal Processing", "geo": "USA"},
+    {"category": "Taiwan", "name": "TSMC", "ticker": "TSM", "currency": "USD", "price": 178.20, "ann_10y": 0.261, "vol": 0.33, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "United Microelectronics", "ticker": "UMC", "currency": "USD", "price": 7.80, "ann_10y": 0.114, "vol": 0.36, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "Vanguard International", "ticker": "5347.TW", "currency": "TWD", "price": 112.50, "ann_10y": 0.095, "vol": 0.32, "industry": "Pure-Play Foundry", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "MediaTek", "ticker": "2454.TW", "currency": "TWD", "price": 1240.00, "ann_10y": 0.184, "vol": 0.38, "industry": "Mobile Wireless Edge", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "Novatek Microelectronics", "ticker": "3034.TW", "currency": "TWD", "price": 510.00, "ann_10y": 0.141, "vol": 0.30, "industry": "Display Driver ICs", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "Realtek Semiconductor", "ticker": "2379.TW", "currency": "TWD", "price": 485.00, "ann_10y": 0.162, "vol": 0.34, "industry": "Networking / Infrastructure", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "Alchip Technologies", "ticker": "3661.TW", "currency": "TWD", "price": 2450.00, "ann_10y": 0.412, "vol": 0.55, "industry": "Networking / ASICs", "geo": "Taiwan"},
+    {"category": "Taiwan", "name": "ASE Technology Holding", "ticker": "ASX", "currency": "USD", "price": 14.50, "ann_10y": 0.124, "vol": 0.29, "industry": "Advanced Node OSAT packaging", "geo": "Taiwan"},
+    {"category": "Japan", "name": "Tokyo Electron", "ticker": "8035.T", "currency": "JPY", "price": 24500.00, "ann_10y": 0.231, "vol": 0.36, "industry": "Wafer Fab Equipment", "geo": "Japan"},
+    {"category": "Japan", "name": "Advantest Corp.", "ticker": "6857.T", "currency": "JPY", "price": 5800.00, "ann_10y": 0.252, "vol": 0.39, "industry": "Process Diagnostics Equipment", "geo": "Japan"},
+    {"category": "Japan", "name": "Disco Corp.", "ticker": "6146.T", "currency": "JPY", "price": 41200.00, "ann_10y": 0.342, "vol": 0.41, "industry": "Wafer Fab Equipment", "geo": "Japan"},
+    {"category": "Japan", "name": "Lasertec Corp.", "ticker": "6920.T", "currency": "JPY", "price": 22400.00, "ann_10y": 0.485, "vol": 0.48, "industry": "Process Diagnostics Equipment", "geo": "Japan"},
+    {"category": "Japan", "name": "SCREEN Holdings", "ticker": "7735.T", "currency": "JPY", "price": 9800.00, "ann_10y": 0.221, "vol": 0.38, "industry": "Wafer Fab Equipment", "geo": "Japan"},
+    {"category": "Japan", "name": "Kokusai Electric", "ticker": "6525.T", "currency": "JPY", "price": 3100.00, "ann_10y": 0.165, "vol": 0.35, "industry": "Wafer Fab Equipment", "geo": "Japan"},
+    {"category": "Japan", "name": "Kioxia Holdings", "ticker": "285A.T", "currency": "JPY", "price": 2850.00, "ann_10y": 0.112, "vol": 0.43, "industry": "Memory (HBM / DRAM)", "geo": "Japan"},
+    {"category": "Japan", "name": "Renesas Electronics", "ticker": "6723.T", "currency": "JPY", "price": 2450.00, "ann_10y": 0.154, "vol": 0.32, "industry": "Analog Nodes / Embedded Chips", "geo": "Japan"},
+    {"category": "Japan", "name": "Ibiden Co.", "ticker": "4062.T", "currency": "JPY", "price": 4800.00, "ann_10y": 0.132, "vol": 0.33, "industry": "Advanced Node OSAT packaging", "geo": "Japan"},
+    {"category": "Japan", "name": "ROHM Co.", "ticker": "6963.T", "currency": "JPY", "price": 1850.00, "ann_10y": 0.084, "vol": 0.29, "industry": "Analog Nodes / Power Systems", "geo": "Japan"},
+    {"category": "South Korea", "name": "Samsung Electronics", "ticker": "005930.KS", "currency": "KRW", "price": 68500.00, "ann_10y": 0.112, "vol": 0.31, "industry": "IDM Conglomerate", "geo": "South Korea"},
+    {"category": "South Korea", "name": "SK Hynix", "ticker": "000660.KS", "currency": "KRW", "price": 165000.00, "ann_10y": 0.214, "vol": 0.42, "industry": "Memory (HBM / DRAM)", "geo": "South Korea"},
+    {"category": "Europe", "name": "ASML Holding N.V.", "ticker": "ASML", "currency": "EUR", "price": 820.10, "ann_10y": 0.225, "vol": 0.28, "industry": "Lithography Equipment", "geo": "Netherlands"},
+    {"category": "Europe", "name": "Infineon Technologies", "ticker": "IFX", "currency": "EUR", "price": 34.20, "ann_10y": 0.145, "vol": 0.33, "industry": "Analog Nodes / Power Systems", "geo": "Germany"},
+    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "SMIC", "ticker": "0981.HK", "currency": "HKD", "price": 22.40, "ann_10y": 0.125, "vol": 0.45, "industry": "Pure-Play Foundry", "geo": "China"},
+    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Hua Hong Semiconductor", "ticker": "1347.HK", "currency": "HKD", "price": 18.50, "ann_10y": 0.091, "vol": 0.41, "industry": "Pure-Play Foundry", "geo": "China"},
+    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Shanghai Fudan Micro", "ticker": "1385.HK", "currency": "HKD", "price": 14.20, "ann_10y": 0.154, "vol": 0.48, "industry": "Analog Nodes / Embedded Chips", "geo": "China"},
+    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "InnoScience Technology", "ticker": "2577.HK", "currency": "HKD", "price": 8.50, "ann_10y": 0.050, "vol": 0.50, "industry": "Analog Nodes / Power Systems", "geo": "China"},
+    {"category": "Hong Kong Stock Exchange (HKEX)", "name": "Shanghai Biren Technology", "ticker": "6082.HK", "currency": "HKD", "price": 12.10, "ann_10y": 0.060, "vol": 0.55, "industry": "AI Compute / GPUs", "geo": "China"},
 
-@st.cache_data
-def load_fixed_dataframe():
-    rows = []
-    for item in RAW_UNIVERSE:
-        p = item.split("|")
-        rows.append({
-            "category": p[0], "name": p[1], "ticker": p[2], "currency": p[3],
-            "price": float(p[4]), "ann_10y": float(p[5]), "vol": float(p[6]),
-            "industry": p[7], "geo": p[8]
-        })
-    return pd.DataFrame(rows)
-
-df = load_fixed_dataframe()
-
-# Initialize session items without dictionary structures that cause key failures
-if "focused_asset" not in st.session_state:
-    st.session_state.focused_asset = "NVDA"
-
-if "weights" not in st.session_state:
-    st.session_state.weights = {r["ticker"]: 0 for _, r in df.iterrows()}
-
-st.title("📊 PORTFOLIO TESTING PANEL")
-
-col_left, col_right = st.columns([1.3, 1.0], gap="large")
-
-with col_left:
-    st.subheader("📂 Register Matrix")
-    
-    categories = ["All", "Magnificent Seven", "SOXX Holdings", "Taiwan Foundry"]
-    selected_cat = st.selectbox("Filter Active Assets Region", options=categories)
-    
-    # Static column header definitions
-    h1, h2, h3, h4 = st.columns([0.6, 2.4, 1.2, 1.2])
-    h1.markdown("**TICK**")
-    h2.markdown("**STOCK ASSET LIST**")
-    h3.markdown("**ALLOCATION %**")
-    h4.markdown("**PRICE**")
-    
-    for idx, row in df.iterrows():
-        if selected_cat != "All" and row["category"] != selected_cat:
-            continue
-            
-        tick = row["ticker"]
-        r1, r2, r3, r4 = st.columns([0.6, 2.4, 1.2, 1.2])
-        
-        # Determine if asset checkbox is marked active
-        is_active = r1.checkbox("", value=(st.session_state.weights[tick] > 0), key=f"chk_{tick}_{idx}", label_visibility="collapsed")
-        
-        if r2.button(f"🔗 {tick} | {row['name'][:18]}", key=f"btn_{tick}_{idx}"):
-            st.session_state.focused_asset = tick
-            st.rerun()
-            
-        if is_active:
-            current_weight = st.session_state.weights[tick]
-            start_val = int(current_weight) if current_weight > 0 else 0
-            val = r3.number_input("", min_value=0, max_value=100, value=start_val, step=5, key=f"num_{tick}_{idx}", label_visibility="collapsed")
-            st.session_state.weights[tick] = val
-        else:
-            st.session_state.weights[tick] = 0
-            r3.markdown("<span style='color: #888888;'>MUTED</span>", unsafe_allow_html=True)
-            
-        r4.write(f"{row['currency']} {row['price']:,.2f}")
-
-    st.write("")
-    total_allocation = sum(st.session_state.weights.values())
-    
-    if total_allocation == 100:
-        st.success(f"🎯 READY TO EXECUTE: TOTAL SUM IS {total_allocation}%")
-    else:
-        st.warning(f"⚠️ COMPLIANCE HOLD: TOTAL SUM IS {total_allocation}% / 100%")
-        
-    entry_year = st.selectbox("🕹️ ENTRY YEAR", options=[2016, 2017, 2018, 2019, 2020, 2021], index=2)
-    run_backtest = st.button("🔴 RUN BACKTEST 🔴", use_container_width=True)
-
-with col_right:
-    active_target = st.session_state.focused_asset
-    target_data = df[df["ticker"] == active_target]
-    
-    if not target_data.empty:
-        # FIXED: Pulled out clean basic scalar values without using nested lists or index zero dictionary strings
-        f_name = target_data["name"].values[0]
-        f_cat = target_data["category"].values[0]
-        f_price = target_data["price"].values[0]
-        f_curr = target_data["currency"].values[0]
-        f_ret = target_data["ann_10y"].values[0]
-        f_ind = target_data["industry"].values[0]
-        f_geo = target_data["geo"].values[0]
-        
-        st.subheader(f"📊 Data Profile: {active_target}")
-        st.text(f"{f_name} ({f_cat})")
-        st.markdown("---")
-        
-        m1, m2 = st.columns(2)
-        m1.metric("LAST PRICE", f"{f_curr} {f_price:,.2f}")
-        m2.metric("10Y COMP. RATE", f"{f_ret*100:.1f}%")
-        
-        st.markdown("---")
-        st.markdown(f"- **Primary Sector Domain:** {f_ind}")
-        st.markdown(f"- **Geographic Processing Matrix:** {f_geo}")
-    else:
-        st.write("Select an active asset to load data parameters.")
-
-# 5. SECURE NON-GRAPH PERFORMANCE LEDGER SIMULATION
-if run_backtest:
-    if total_allocation != 100:
-        st.error(f"❌ COMPLIANCE REJECTION: Allocation must total exactly 100%. Current sum: {total_allocation}%")
-    else:
-        st.markdown("---")
-        st.subheader("🎯 Backtest Performance Simulation Results")
-        
-        table_output = []
-        current_year = 2026
-        years_elapsed = current_year - entry_year
-        
-        for ticker, alloc in st.session_state.weights.items():
-            if alloc <= 0:
-                continue
-                
-            match = df[df["ticker"] == ticker]
-            if not match.empty:
-                r_rate = match["ann_10y"].values[0]
-                v_rate = match["vol"].values[0]
-                
-                # Formula simulation calculation engine without plot graphs
-                growth_factor = np.exp((r_rate - 0.5 * (v_rate**2)) * years_elapsed)
-                allocated_principal = 100000 * (alloc / 100.0)
-                terminal_value = allocated_principal * growth_factor
-                perf_pct = (growth_factor - 1.0) * 100
-                
-                table_output.append({
-                    "Asset Ticker": ticker,
-                    "Allocation Weight": f"{alloc}%",
-                    "Principal Base": f"${allocated_principal:,.2f}",
-                    f"Terminal Value ({current_year})": f"${terminal_value:,.2f}",
-                    "Absolute Performance": f"{perf_pct:+.1f}%"
-                })
-                
-        if table_output:
-            st.markdown("### 📋 Position Historical Balances Ledger")
-            st.table(pd.DataFrame(table_output))
-        else:
-            st.error("No active positions selected.")
 
 
 
