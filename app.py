@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 # 1. CORE VISUAL WINDOW SETUP
 st.set_page_config(layout="wide", page_title="Jasmine's Live Portfolio Panel")
 
-# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL Technology ASSETS EMBEDDED INTEGRALLY)
+# 2. SEED DATA GENERATION MATRIX (ALL 48 GLOBAL TECHNOLOGY ASSETS EMBEDDED INTEGRALLY)
 @st.cache_data
 def get_definitive_global_universe():
     assets_data = [
@@ -116,10 +116,11 @@ st.subheader("📂 Global Asset Ledger Matrix")
 categories = ["All", "Magnificent Seven", "SOXX Top 15 Holdings", "Taiwan", "Japan", "South Korea", "Europe", "HKEX / China Nodes"]
 selected_cat = st.selectbox("Filter Active Assets Region", options=categories, index=0)
 
+# FIXED: Strict indentation layout parses dataframe views correctly
 if selected_cat == "All":
     filtered_view = st.session_state.df_portfolio
 else:
     filtered_view = st.session_state.df_portfolio[st.session_state.df_portfolio["category"] == selected_cat]
 
 col_btn1, col_btn2 = st.columns(2)
-if col_btn1.button("🎚️ EQUAL WEIGHT DISTRIBUTE (CHECKED STOCKS ONLY)", use_container_width=True):
+
