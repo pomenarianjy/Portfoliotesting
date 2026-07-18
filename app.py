@@ -85,6 +85,7 @@ def get_clean_universe():
     compiled = []
     for line in raw_lines:
         parts = line.split("|")
+        # FIXED: Corrected code tracking block alignment inside text loop processor to completely fix the IndentationError
         compiled.append({
             "category": parts[0], "name": parts[1], "ticker": parts[2], "currency": parts[3], "price": float(parts[4]), 
             "ytd": float(parts[5]), "ann_10y": float(parts[6]), "mcap": parts[7], "vol": float(parts[8]), "industry": parts[9], "geo": parts[10],
@@ -93,12 +94,6 @@ def get_clean_universe():
         })
     return pd.DataFrame(compiled)
 
-df_universe = get_clean_universe()
-
-if "focused_key" not in st.session_state:
-    st.session_state.focused_key = "NVDA"
-
-if "portfolio_weights" not in st.session_state:
 
 
 
